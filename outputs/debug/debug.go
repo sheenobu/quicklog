@@ -38,18 +38,16 @@ func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config m
 		for {
 			select {
 			case line := <-prev:
-				os.Stdout.Write([]byte("Message: " + line.Data["message"]))
+				os.Stdout.Write([]byte(fmt.Sprintf("Time: [%v]\n", line.Timestamp)))
+				os.Stdout.Write([]byte("Message: " + line.Data["message"] + "\n"))
 
 				if !printFields {
-					os.Stdout.Write([]byte("\n"))
 					continue
-				} else {
-					os.Stdout.Write([]byte(" | "))
 				}
 
 				for key, val := range line.Data {
 					if key != "message" {
-						os.Stdout.Write([]byte(fmt.Sprintf("%s=%s ", key, val)))
+						os.Stdout.Write([]byte(fmt.Sprintf("\t%s=%s\n", key, val)))
 					}
 				}
 
