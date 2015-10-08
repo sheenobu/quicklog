@@ -15,7 +15,7 @@ func init() {
 type debugHandler struct {
 }
 
-func (d *debugHandler) Handle(ctx context.Context, prev chan ql.Line, config map[string]interface{}) error {
+func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
 
 	printFields := true
 

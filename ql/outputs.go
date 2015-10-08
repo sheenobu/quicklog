@@ -6,7 +6,7 @@ import (
 
 // OutputHandler is the interface for defining output plugins
 type OutputHandler interface {
-	Handle(context.Context, chan Line, map[string]interface{}) error
+	Handle(context.Context, <-chan Line, map[string]interface{}) error
 }
 
 var (

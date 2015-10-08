@@ -15,7 +15,7 @@ func init() {
 
 type bleveOutput struct{}
 
-func (out *bleveOutput) Handle(ctx context.Context, prev chan ql.Line, config map[string]interface{}) error {
+func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
 
 	index, err := bleve.Open("example.bleve")
 	if err != nil {

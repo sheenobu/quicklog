@@ -15,7 +15,7 @@ func init() {
 type stdoutHandler struct {
 }
 
-func (stdout *stdoutHandler) Handle(ctx context.Context, prev chan ql.Line, config map[string]interface{}) error {
+func (stdout *stdoutHandler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
 	go func() {
 		for {
 			select {
