@@ -28,5 +28,5 @@ Main engine
 
 ### config 
 
-JSON based Configuration
+JSON or (soon) etcd based configuration
 
