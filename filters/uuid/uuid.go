@@ -28,7 +28,7 @@ func (u *uuidHandler) Handle(ctx context.Context, prev <-chan ql.Line, next chan
 		}
 	}
 
-	log.Log(ctx).Debug("Starting filter handler", "handler", "uuid")
+	log.Log(ctx).Debug("Starting filter handler", "handler", "uuid", "field", field)
 
 	go func() {
 		for {

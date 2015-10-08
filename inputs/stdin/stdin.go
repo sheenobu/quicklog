@@ -9,43 +9,51 @@ import (
 	"github.com/sheenobu/quicklog/ql"
 
 	"golang.org/x/net/context"
+
+	"sync"
 )
 
 func init() {
-	ql.RegisterInput("stdin", &stdin{})
+	ql.RegisterInput("stdin", &stdin{
+		ch: make(chan ql.Line),
+	})
 }
 
 type stdin struct {
+	once sync.Once
+	ch   chan ql.Line
 }
 
 func (s *stdin) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
 
 	log.Log(ctx).Debug("Starting input handler", "handler", "stdin")
 
-	ch := make(chan ql.Line)
+	s.once.Do(func() {
+		go func() {
+			bio := bufio.NewReader(os.Stdin)
 
-	go func() {
-		bio := bufio.NewReader(os.Stdin)
-		for {
-			line, _, err := bio.ReadLine()
-			if err != nil {
-				break
+			for {
+
+				line, _, err := bio.ReadLine()
+				if err != nil {
+					break
+				}
+				l := ql.Line{
+					Data:      make(map[string]string),
+					Timestamp: time.Now(),
+				}
+				l.Data["message"] = string(line)
+				s.ch <- l
 			}
-			l := ql.Line{
-				Data:      make(map[string]string),
-				Timestamp: time.Now(),
-			}
-			l.Data["message"] = string(line)
-			ch <- l
-		}
-	}()
+		}()
+	})
 
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
 				return
-			case str := <-ch:
+			case str := <-s.ch:
 				next <- str
 			}
 		}

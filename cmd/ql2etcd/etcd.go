@@ -63,5 +63,7 @@ func syncToEtcd(ctx context.Context, cfg *config.Config) error {
 		kapi.Set(ctx, root+"/filters/"+strconv.Itoa(idx)+"/config", string(filterConfig), nil)
 	}
 
+	kapi.Set(ctx, root+"/reload", "1", nil)
+
 	return nil
 }
