@@ -1,16 +1,12 @@
 package main
 
 import (
-	"github.com/sheenobu/quicklog/config"
-
 	_ "github.com/sheenobu/quicklog/filters"
 	_ "github.com/sheenobu/quicklog/inputs"
 	_ "github.com/sheenobu/quicklog/outputs"
 
 	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"
-
-	"github.com/sheenobu/quicklog/ql"
 
 	"golang.org/x/net/context"
 
@@ -20,9 +16,16 @@ import (
 )
 
 var configFile string
+var etcdEndpoints string
+var instanceName string
 
 func init() {
+
 	flag.StringVar(&configFile, "filename", "quicklog.json", "Filename for the configuration")
+
+	flag.StringVar(&etcdEndpoints, "etcdEndpoints", "", "Servers for etcd, comma separated")
+	flag.StringVar(&instanceName, "instanceName", "", "Instance name used for etcd prefix")
+
 }
 
 func main() {
@@ -47,29 +50,12 @@ func main() {
 		app.Stop()
 	}()
 
-	// load config
-	cfg, err := config.LoadFile(configFile)
-	if err != nil {
-		log.Log(ctx).Error("Error loading configuration", "error", err)
-		os.Exit(255)
-		return
+	switch {
+	case etcdEndpoints != "" && instanceName != "":
+		startEtcdQuicklog(ctx, app)
+	case configFile != "":
+		startFileQuicklog(ctx, app)
 	}
-
-	// setup chain
-	chain := ql.Chain{
-		Input:        ql.GetInput(cfg.Input.Driver),
-		InputConfig:  cfg.Input.Config,
-		Output:       ql.GetOutput(cfg.Output.Driver),
-		OutputConfig: cfg.Output.Config,
-	}
-
-	if len(cfg.Filters) >= 1 {
-		chain.Filter = ql.GetFilter(cfg.Filters[0].Driver)
-		chain.FilterConfig = cfg.Filters[0].Config
-	}
-
-	// execute chain
-	app.SpawnSimple("chain", chain.Execute)
 
 	app.Wait()
 }
