@@ -1,6 +1,7 @@
 
 build:
 	go build ./cmd/quicklog
+	go build ./cmd/qlsearch
 
 clean:
 	rm -f ./quicklog

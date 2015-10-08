@@ -20,6 +20,7 @@ Main engine
 
  * stdout
  * debug
+ * bleve
 
 ### config 
 

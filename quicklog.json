@@ -8,10 +8,7 @@
 		}
 	],
 	"output": {
-		"driver":"debug",
-		"config": {
-			"print-fields": false
-		}
+		"driver":"bleve"
 	}
 }
 
