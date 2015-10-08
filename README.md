@@ -1,6 +1,36 @@
 # quicklog
 
-example configurations are in examples/
+Simple log aggregator, parser.
+
+Example configurations are in examples/
+
+## Installing everything:
+
+go install github.com/sheenobu/quicklog/cmd/...
+
+## Running
+
+File config:
+
+	$ quicklog -configFile quicklog.josn
+
+Etcd config:
+
+	$ quicklog -etcdEndpoints "http://127.0.0.1:4001" -instanceName "myQuicklog"
+
+## Commands
+
+### quicklog
+
+runs the log input, filter, and output. Can be configured via configfile or etcd.
+
+### ql2etcd
+
+Loads a JSON quicklog config file into etcd under a specific instance name
+
+### qlsearch
+
+proof-of-concept search client for the bleve output
 
 ## components
 
@@ -28,5 +58,5 @@ Main engine
 
 ### config 
 
-JSON or (soon) etcd based configuration
+JSON or etcd based configuration
 
