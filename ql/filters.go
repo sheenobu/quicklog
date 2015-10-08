@@ -6,7 +6,7 @@ import (
 
 // A FilterHandler is a handler that processes, edits, and filters incoming data
 type FilterHandler interface {
-	Handle(context.Context, chan Line, chan Line, map[string]interface{}) error
+	Handle(context.Context, <-chan Line, chan<- Line, map[string]interface{}) error
 }
 
 var (

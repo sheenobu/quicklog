@@ -13,7 +13,7 @@ func init() {
 type uuidHandler struct {
 }
 
-func (u *uuidHandler) Handle(ctx context.Context, prev chan ql.Line, next chan ql.Line, config map[string]interface{}) error {
+func (u *uuidHandler) Handle(ctx context.Context, prev <-chan ql.Line, next chan<- ql.Line, config map[string]interface{}) error {
 
 	field := "uuid"
 	ok := true

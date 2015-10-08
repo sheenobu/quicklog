@@ -14,7 +14,7 @@ func init() {
 type uppercase struct {
 }
 
-func (u *uppercase) Handle(ctx context.Context, prev chan ql.Line, next chan ql.Line, config map[string]interface{}) error {
+func (u *uppercase) Handle(ctx context.Context, prev <-chan ql.Line, next chan<- ql.Line, config map[string]interface{}) error {
 
 	go func() {
 		for {
