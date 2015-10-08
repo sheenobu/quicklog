@@ -1,0 +1,19 @@
+{
+	"input": {
+		"driver":"stdin"
+	},
+	"filters": [
+		{
+			"driver":"uuid"
+		}
+	],
+	"output": {
+		"driver":"nats",
+		"config": {
+			"url": "nats://127.0.0.1:4222",
+			"publish": "logging:queue"
+		}
+	}
+}
+
+

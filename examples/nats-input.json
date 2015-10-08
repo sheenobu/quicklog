@@ -1,0 +1,14 @@
+{
+	"input": {
+		"driver":"nats",
+		"config": {
+			"url": "nats://127.0.0.1:4222",
+			"subscribe": "logging:queue"
+			}
+	},
+	"output": {
+		"driver":"debug"
+	}
+}
+
+

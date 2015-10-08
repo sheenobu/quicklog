@@ -12,6 +12,7 @@ Main engine
 
  * stdin - Read 'message' field from standard input
  * tcp - Read 'message' field from TCP input
+ * nats - Read the entire log entry from a nats queue
 
 ### filters
 
@@ -23,6 +24,7 @@ Main engine
  * stdout - Writes the 'message' field to standard out
  * debug - Writes the 'message' field to standard out, plus each additional field on the log entry
  * bleve - Writes all the field data to a bleve index. (experimental)
+ * nats - Writes the entire log entry entry to a nats queue
 
 ### config 
 
