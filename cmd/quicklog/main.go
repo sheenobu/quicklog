@@ -14,6 +14,7 @@ import (
 
 	"flag"
 	"os"
+	"os/signal"
 )
 
 var configFile string
@@ -26,9 +27,18 @@ func main() {
 
 	flag.Parse()
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
 	ctx = log.NewContext(ctx)
 	log.Log(ctx).Info("Starting quicklog", "configfile", configFile)
+
+	// register signal listeners
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	go func() {
+		s := <-c
+		log.Log(ctx).Info("Got interrupt signal, stopping quicklog", "signal", s)
+		cancel()
+	}()
 
 	// load config
 	cfg, err := config.LoadFile(configFile)
