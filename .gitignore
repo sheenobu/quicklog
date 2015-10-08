@@ -1,3 +1,5 @@
 /quicklog
 /qlsearch
+/ql2etcd
 *.bleve
+*.etcd
