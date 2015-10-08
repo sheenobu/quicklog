@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/context"
 
 	"net"
+	"time"
 )
 
 func init() {
@@ -46,6 +47,8 @@ func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Line, config map
 					l := ql.Line{
 						Data: make(map[string]string),
 					}
+
+					l.Timestamp = time.Now() //TODO: read timestamp from incoming data
 					l.Data["message"] = string(line)
 					l.Data["tcp.source"] = conn.RemoteAddr().String()
 					ch <- l

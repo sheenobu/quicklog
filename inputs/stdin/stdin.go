@@ -3,6 +3,7 @@ package stdin
 import (
 	"bufio"
 	"os"
+	"time"
 
 	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
@@ -31,7 +32,8 @@ func (s *stdin) Handle(ctx context.Context, next chan<- ql.Line, config map[stri
 				break
 			}
 			l := ql.Line{
-				Data: make(map[string]string),
+				Data:      make(map[string]string),
+				Timestamp: time.Now(),
 			}
 			l.Data["message"] = string(line)
 			ch <- l
