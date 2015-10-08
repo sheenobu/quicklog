@@ -7,7 +7,9 @@ import (
 	_ "github.com/sheenobu/quicklog/inputs"
 	_ "github.com/sheenobu/quicklog/outputs"
 
+	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"
+
 	"github.com/sheenobu/quicklog/ql"
 
 	"golang.org/x/net/context"
@@ -27,9 +29,14 @@ func main() {
 
 	flag.Parse()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	// Setup context
+	ctx := context.Background()
 	ctx = log.NewContext(ctx)
 	log.Log(ctx).Info("Starting quicklog", "configfile", configFile)
+
+	// Setup app
+	app := apps.NewApp("quicklog")
+	app.StartWithContext(ctx)
 
 	// register signal listeners
 	c := make(chan os.Signal, 1)
@@ -37,7 +44,7 @@ func main() {
 	go func() {
 		s := <-c
 		log.Log(ctx).Info("Got interrupt signal, stopping quicklog", "signal", s)
-		cancel()
+		app.Stop()
 	}()
 
 	// load config
@@ -62,5 +69,7 @@ func main() {
 	}
 
 	// execute chain
-	chain.Execute(ctx)
+	app.SpawnSimple("chain", chain.Execute)
+
+	app.Wait()
 }
