@@ -10,11 +10,21 @@ import (
 	_ "github.com/sheenobu/quicklog/outputs"
 
 	"github.com/sheenobu/quicklog/ql"
+
+	"flag"
 )
+
+var configFile string
+
+func init() {
+	flag.StringVar(&configFile, "filename", "quicklog.json", "Filename for the configuration")
+}
 
 func main() {
 
-	cfg, err := config.LoadFile("quicklog.json")
+	flag.Parse()
+
+	cfg, err := config.LoadFile(configFile)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
