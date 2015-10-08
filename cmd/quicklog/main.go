@@ -21,14 +21,15 @@ func main() {
 	}
 
 	chain := ql.Chain{
-		Input:       ql.GetInput(cfg.Input.Driver),
-		InputConfig: cfg.Input.Config,
-
-		Filter:       ql.GetFilter(cfg.Filters[0].Driver),
-		FilterConfig: cfg.Filters[0].Config,
-
+		Input:        ql.GetInput(cfg.Input.Driver),
+		InputConfig:  cfg.Input.Config,
 		Output:       ql.GetOutput(cfg.Output.Driver),
 		OutputConfig: cfg.Output.Config,
+	}
+
+	if len(cfg.Filters) >= 1 {
+		chain.Filter = ql.GetFilter(cfg.Filters[0].Driver)
+		chain.FilterConfig = cfg.Filters[0].Config
 	}
 
 	chain.Execute()
