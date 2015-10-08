@@ -3,6 +3,7 @@ package tcp
 import (
 	"bufio"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 
@@ -16,23 +17,23 @@ func init() {
 type tcpInput struct {
 }
 
-func (tcp *tcpInput) Handle(next chan<- ql.Line, config map[string]interface{}) (context.Context, error) {
-
-	ctx, _ := context.WithCancel(context.Background())
+func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
 
 	listen := config["listen"].(string)
 
 	ch := make(chan ql.Line)
 	ln, err := net.Listen("tcp", listen)
 	if err != nil {
-		return ctx, err
+		return err
 	}
+
+	log.Log(ctx).Debug("Starting input handler", "handler", "tcp")
 
 	go func() {
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				//TODO: log error
+				log.Log(ctx).Error("Error accepting connection", "error", err)
 			}
 			go func(conn net.Conn) {
 				bio := bufio.NewReader(conn)
@@ -64,5 +65,5 @@ func (tcp *tcpInput) Handle(next chan<- ql.Line, config map[string]interface{}) 
 		}
 	}()
 
-	return ctx, nil
+	return nil
 }

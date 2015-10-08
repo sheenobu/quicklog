@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"os"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
+
 	"golang.org/x/net/context"
 )
 
@@ -15,9 +17,9 @@ func init() {
 type stdin struct {
 }
 
-func (s *stdin) Handle(next chan<- ql.Line, config map[string]interface{}) (context.Context, error) {
+func (s *stdin) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
 
-	ctx, cancel := context.WithCancel(context.Background())
+	log.Log(ctx).Debug("Starting input handler", "handler", "stdin")
 
 	ch := make(chan ql.Line)
 
@@ -34,9 +36,6 @@ func (s *stdin) Handle(next chan<- ql.Line, config map[string]interface{}) (cont
 			l.Data["message"] = string(line)
 			ch <- l
 		}
-		go func() {
-			cancel()
-		}()
 	}()
 
 	go func() {
@@ -50,5 +49,5 @@ func (s *stdin) Handle(next chan<- ql.Line, config map[string]interface{}) (cont
 		}
 	}()
 
-	return ctx, nil
+	return nil
 }

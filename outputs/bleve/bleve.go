@@ -1,8 +1,8 @@
 package bleve
 
 import (
-	"fmt"
 	"github.com/blevesearch/bleve"
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 
@@ -16,6 +16,8 @@ func init() {
 type bleveOutput struct{}
 
 func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
+
+	log.Log(ctx).Debug("Starting output handler", "handler", "bleve")
 
 	index, err := bleve.Open("example.bleve")
 	if err != nil {
@@ -32,7 +34,7 @@ func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config 
 			case line := <-prev:
 				err = index.Index(uuid.New(), line.Data)
 				if err != nil {
-					fmt.Printf("error indexing: %s\n", err)
+					log.Log(ctx).Error("Error indexing line", "error", err)
 				}
 			case <-ctx.Done():
 				return

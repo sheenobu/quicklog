@@ -1,5 +1,10 @@
 package ql
 
+import (
+	"github.com/sheenobu/golibs/log"
+	"golang.org/x/net/context"
+)
+
 // A Chain is a series of handlers that process data
 type Chain struct {
 	Input       InputHandler
@@ -13,7 +18,7 @@ type Chain struct {
 }
 
 // Execute executes the chain and waits for its completion
-func (ch *Chain) Execute() {
+func (ch *Chain) Execute(ctx context.Context) {
 
 	inputHandler := ch.Input
 	outputHandler := ch.Output
@@ -22,17 +27,30 @@ func (ch *Chain) Execute() {
 
 	inputChan := make(chan Line)
 
-	ctx, _ := inputHandler.Handle(inputChan, ch.InputConfig)
+	err := inputHandler.Handle(ctx, inputChan, ch.InputConfig)
+	if err != nil {
+		log.Log(ctx).Crit("Error creating input handler", "error", err)
+		return
+	}
 
 	if ch.Filter != nil {
 		filterHandler := ch.Filter
 		chann = make(chan Line)
-		filterHandler.Handle(ctx, inputChan, chann, ch.FilterConfig)
+		err = filterHandler.Handle(ctx, inputChan, chann, ch.FilterConfig)
+		if err != nil {
+			log.Log(ctx).Crit("Error creating filter handler", "error", err)
+			return
+		}
+
 	} else {
 		chann = inputChan
 	}
 
-	outputHandler.Handle(ctx, chann, ch.OutputConfig)
+	err = outputHandler.Handle(ctx, chann, ch.OutputConfig)
+	if err != nil {
+		log.Log(ctx).Crit("Error creating output handler", "error", err)
+		return
+	}
 
 	<-ctx.Done()
 }

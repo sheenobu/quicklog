@@ -3,6 +3,7 @@ package uuid
 import (
 	"strings"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 )
@@ -15,6 +16,8 @@ type uppercase struct {
 }
 
 func (u *uppercase) Handle(ctx context.Context, prev <-chan ql.Line, next chan<- ql.Line, config map[string]interface{}) error {
+
+	log.Log(ctx).Debug("Starting filter handler", "handler", "uppercase")
 
 	go func() {
 		for {

@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/sheenobu/quicklog/config"
 
 	_ "github.com/sheenobu/quicklog/filters"
 	_ "github.com/sheenobu/quicklog/inputs"
 	_ "github.com/sheenobu/quicklog/outputs"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 
+	"golang.org/x/net/context"
+
 	"flag"
+	"os"
 )
 
 var configFile string
@@ -24,12 +26,19 @@ func main() {
 
 	flag.Parse()
 
+	ctx := context.Background()
+	ctx = log.NewContext(ctx)
+	log.Log(ctx).Info("Starting quicklog", "configfile", configFile)
+
+	// load config
 	cfg, err := config.LoadFile(configFile)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		log.Log(ctx).Error("Error loading configuration", "error", err)
+		os.Exit(255)
 		return
 	}
 
+	// setup chain
 	chain := ql.Chain{
 		Input:        ql.GetInput(cfg.Input.Driver),
 		InputConfig:  cfg.Input.Config,
@@ -42,5 +51,6 @@ func main() {
 		chain.FilterConfig = cfg.Filters[0].Config
 	}
 
-	chain.Execute()
+	// execute chain
+	chain.Execute(ctx)
 }

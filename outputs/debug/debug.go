@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 )
@@ -27,9 +28,11 @@ func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config m
 		case string:
 			printFields = k == "true"
 		default:
-			//TODO: log warning
+			log.Log(ctx).Warn("Could not parse print-fields variable, falling back to true")
 		}
 	}
+
+	log.Log(ctx).Debug("Starting output handler", "handler", "debug")
 
 	go func() {
 		for {

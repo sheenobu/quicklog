@@ -6,7 +6,7 @@ import (
 
 // An InputHandler is a handler that waits for input and sends it to the line channel
 type InputHandler interface {
-	Handle(chan<- Line, map[string]interface{}) (context.Context, error)
+	Handle(context.Context, chan<- Line, map[string]interface{}) error
 }
 
 var (

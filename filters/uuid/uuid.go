@@ -2,6 +2,7 @@ package uuid
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 )
@@ -22,10 +23,12 @@ func (u *uuidHandler) Handle(ctx context.Context, prev <-chan ql.Line, next chan
 	if fieldIface != nil {
 		field, ok = fieldIface.(string)
 		if !ok {
-			//TODO: Warn
+			log.Log(ctx).Warn("Could not parse UUID config, using field=uuid")
 			field = "uuid"
 		}
 	}
+
+	log.Log(ctx).Debug("Starting filter handler", "handler", "uuid")
 
 	go func() {
 		for {

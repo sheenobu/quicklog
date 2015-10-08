@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 )
@@ -16,6 +17,9 @@ type stdoutHandler struct {
 }
 
 func (stdout *stdoutHandler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
+
+	log.Log(ctx).Debug("Starting output handler", "handler", "stdout")
+
 	go func() {
 		for {
 			select {
