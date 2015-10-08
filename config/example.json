@@ -1,0 +1,21 @@
+{
+	"input": {
+		"driver":"tcp",
+		"config": {
+			"port": 9999
+		}
+	},
+	"filters": [
+		{
+			"driver":"uuid",
+			"config": {
+				"field":"message-id"
+			}
+		}
+	],
+	"output": {
+		"driver":"debug"
+	}
+}
+
+

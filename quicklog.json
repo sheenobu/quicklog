@@ -1,0 +1,18 @@
+{
+	"input": {
+		"driver":"stdin"
+	},
+	"filters": [
+		{
+			"driver":"uppercase"
+		}
+	],
+	"output": {
+		"driver":"debug",
+		"config": {
+			"print-fields": false
+		}
+	}
+}
+
+
