@@ -1,0 +1,18 @@
+{
+	"input": {
+		"driver":"stdin"
+	},
+	"filters": [
+		{
+			"driver":"uuid",
+			"config": {
+				"field": "messageID"
+			}
+		}
+	],
+	"output": {
+		"driver":"debug"
+	}
+}
+
+

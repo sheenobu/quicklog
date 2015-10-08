@@ -1,0 +1,15 @@
+{
+	"input": {
+		"driver":"stdin"
+	},
+	"filters": [
+		{
+			"driver":"uppercase"
+		}
+	],
+	"output": {
+		"driver":"stdout"
+	}
+}
+
+
