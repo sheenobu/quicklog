@@ -13,7 +13,7 @@ docker: linux
 	docker build -t sheenobu/quicklog .
 
 clean:
-	rm -f ./quicklog
+	rm -f ./quicklog ./quicklog-linux ./qlsearch ./qlsearch-linux ./ql2etcd ./ql2etcd-linux
 
 test:
 	go test ./...
