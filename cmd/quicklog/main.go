@@ -25,7 +25,6 @@ func init() {
 
 	flag.StringVar(&etcdEndpoints, "etcdEndpoints", "", "Servers for etcd, comma separated")
 	flag.StringVar(&instanceName, "instanceName", "", "Instance name used for etcd prefix")
-
 }
 
 func main() {
@@ -35,7 +34,7 @@ func main() {
 	// Setup context
 	ctx := context.Background()
 	ctx = log.NewContext(ctx)
-	log.Log(ctx).Info("Starting quicklog", "configfile", configFile)
+	log.Log(ctx).Info("Starting quicklog")
 
 	// Setup app
 	app := apps.NewApp("quicklog")
