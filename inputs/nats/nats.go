@@ -60,7 +60,7 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[
 		return err
 	}
 
-	recvCh := make(chan []byte)
+	recvCh := make(chan map[string]interface{})
 	c.BindRecvChan(publish, recvCh)
 
 	go func() {
@@ -69,7 +69,13 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[
 		for {
 			select {
 			case line := <-recvCh:
-				next <- ql.CreateBuffer(line, map[string]interface{}{})
+				msg := ""
+				if line["message"] != nil {
+					msg = line["message"].(string)
+				}
+
+				delete(line, "message")
+				next <- ql.CreateBuffer([]byte(msg), line)
 			case <-ctx.Done():
 				return
 			}
