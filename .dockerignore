@@ -1,0 +1,12 @@
+quicklog
+ql2etcd
+qlsearch
+*.bleve
+examples
+inputs
+outputs
+filters
+ql
+parsers
+config
+cmd
