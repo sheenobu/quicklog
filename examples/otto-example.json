@@ -1,0 +1,19 @@
+{
+	"input": {
+		"driver":"stdin",
+		"parser": "otto",
+		"config": {
+			"otto.script": "res=function(e){return l=e.split(\" \"),{message:l[0],meta:l[1]}};"
+		}
+	},
+	"filters": [
+		{
+			"driver":"uppercase"
+		}
+	],
+	"output": {
+		"driver":"debug"
+	}
+}
+
+
