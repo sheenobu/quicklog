@@ -2,8 +2,8 @@ package ql
 
 // Parser defines the interface for parsing incoming data
 type Parser interface {
-	// Parse parses the incoming buffer and returns a line object
-	Parse(buffer []byte, line *Line) error
+	// Parse parses the incoming buffer into the line object
+	Parse(buffer []byte, line *Line, config map[string]interface{}) error
 }
 
 var (

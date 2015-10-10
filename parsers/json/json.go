@@ -12,7 +12,7 @@ func init() {
 
 type JSONParser struct{}
 
-func (jp *JSONParser) Parse(buffer []byte, line *ql.Line) error {
+func (jp *JSONParser) Parse(buffer []byte, line *ql.Line, config map[string]interface{}) error {
 	err := json.NewDecoder(bytes.NewReader(buffer)).Decode(&line.Data)
 	if err != nil {
 		return err

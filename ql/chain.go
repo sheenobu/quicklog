@@ -53,7 +53,7 @@ func (ch *Chain) Execute(ctx context.Context) {
 					Timestamp: time.Now(),
 				}
 
-				if err := parser.Parse(buffer.data, &l); err != nil {
+				if err := parser.Parse(buffer.data, &l, ch.InputConfig); err != nil {
 					log.Log(ctx).Error("Error parsing incoming data", "error", err)
 					continue
 				}

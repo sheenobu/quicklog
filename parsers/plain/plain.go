@@ -10,7 +10,7 @@ func init() {
 
 type PlainParser struct{}
 
-func (pp *PlainParser) Parse(buffer []byte, line *ql.Line) error {
+func (pp *PlainParser) Parse(buffer []byte, line *ql.Line, config map[string]interface{}) error {
 	line.Data["message"] = string(buffer)
 	return nil
 }
