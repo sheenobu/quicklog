@@ -44,6 +44,13 @@ Main engine
  * tcp - Read 'message' field from TCP input
  * nats - Read the entire log entry from a nats queue
 
+## parsers
+
+ * plain - parse input as a plain message
+ * json - parse input as json
+ * otto - parse input via javascript
+ * csv - parse input as a CSV entry (TODO)
+
 ### filters
 
  * uuid - Add a randomly generated uuid to the message data, as a custom field
