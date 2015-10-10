@@ -23,7 +23,7 @@ func (u *uppercase) Handle(ctx context.Context, prev <-chan ql.Line, next chan<-
 		for {
 			select {
 			case line := <-prev:
-				line.Data["message"] = strings.ToUpper(line.Data["message"])
+				line.Data["message"] = strings.ToUpper(line.Data["message"].(string))
 				next <- line
 			case <-ctx.Done():
 				return

@@ -4,9 +4,21 @@ import (
 	"golang.org/x/net/context"
 )
 
+type Buffer struct {
+	data     []byte
+	metadata map[string]interface{}
+}
+
+func CreateBuffer(data []byte, metadata map[string]interface{}) Buffer {
+	return Buffer{
+		data:     data,
+		metadata: metadata,
+	}
+}
+
 // An InputHandler is a handler that waits for input and sends it to the line channel
 type InputHandler interface {
-	Handle(context.Context, chan<- Line, map[string]interface{}) error
+	Handle(context.Context, chan<- Buffer, map[string]interface{}) error
 }
 
 var (

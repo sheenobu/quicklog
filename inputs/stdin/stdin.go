@@ -3,7 +3,6 @@ package stdin
 import (
 	"bufio"
 	"os"
-	"time"
 
 	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/ql"
@@ -15,16 +14,16 @@ import (
 
 func init() {
 	ql.RegisterInput("stdin", &stdin{
-		ch: make(chan ql.Line),
+		ch: make(chan ql.Buffer),
 	})
 }
 
 type stdin struct {
 	once sync.Once
-	ch   chan ql.Line
+	ch   chan ql.Buffer
 }
 
-func (s *stdin) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
+func (s *stdin) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
 
 	log.Log(ctx).Debug("Starting input handler", "handler", "stdin")
 
@@ -33,17 +32,11 @@ func (s *stdin) Handle(ctx context.Context, next chan<- ql.Line, config map[stri
 			bio := bufio.NewReader(os.Stdin)
 
 			for {
-
 				line, _, err := bio.ReadLine()
 				if err != nil {
 					break
 				}
-				l := ql.Line{
-					Data:      make(map[string]string),
-					Timestamp: time.Now(),
-				}
-				l.Data["message"] = string(line)
-				s.ch <- l
+				s.ch <- ql.CreateBuffer(line, make(map[string]interface{}))
 			}
 		}()
 	})

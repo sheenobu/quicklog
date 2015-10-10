@@ -48,6 +48,7 @@ func syncToEtcd(ctx context.Context, cfg *config.Config) error {
 	filters := cfg.Filters
 
 	kapi.Set(ctx, root+"/input/driver", input.Driver, nil)
+	kapi.Set(ctx, root+"/input/parser", input.Parser, nil)
 	kapi.Set(ctx, root+"/input/config", string(inputConfig), nil)
 	kapi.Set(ctx, root+"/output/driver", output.Driver, nil)
 	kapi.Set(ctx, root+"/output/config", string(outputConfig), nil)

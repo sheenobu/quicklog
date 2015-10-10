@@ -26,6 +26,7 @@ func startFileQuicklog(ctx context.Context, app *apps.App) {
 	chain := ql.Chain{
 		Input:        ql.GetInput(cfg.Input.Driver),
 		InputConfig:  cfg.Input.Config,
+		Parser:       ql.GetParser(cfg.Input.Parser),
 		Output:       ql.GetOutput(cfg.Output.Driver),
 		OutputConfig: cfg.Output.Config,
 	}

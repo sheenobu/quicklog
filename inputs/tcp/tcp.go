@@ -8,7 +8,6 @@ import (
 	"golang.org/x/net/context"
 
 	"net"
-	"time"
 )
 
 func init() {
@@ -18,11 +17,11 @@ func init() {
 type tcpInput struct {
 }
 
-func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
+func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
 
 	listen := config["listen"].(string)
 
-	ch := make(chan ql.Line)
+	ch := make(chan ql.Buffer)
 	ln, err := net.Listen("tcp", listen)
 	if err != nil {
 		return err
@@ -34,36 +33,44 @@ func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Line, config map
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
+
+				// if the context is done, assume the error
+				// is that the listener has been closed.
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+
 				log.Log(ctx).Error("Error accepting connection", "error", err)
+
+				continue
 			}
 			go func(conn net.Conn) {
 				bio := bufio.NewReader(conn)
-				defer conn.Close()
 				for {
 					line, _, err := bio.ReadLine()
 					if err != nil {
 						break
 					}
-					l := ql.Line{
-						Data: make(map[string]string),
-					}
 
-					l.Timestamp = time.Now() //TODO: read timestamp from incoming data
-					l.Data["message"] = string(line)
-					l.Data["tcp.source"] = conn.RemoteAddr().String()
-					ch <- l
+					m := make(map[string]interface{})
+					m["tcp.source"] = conn.RemoteAddr().String()
+
+					ch <- ql.CreateBuffer(line, m)
 				}
 			}(conn)
 		}
 	}()
 
 	go func() {
+		defer ln.Close()
 		for {
 			select {
 			case <-ctx.Done():
 				return
-			case str := <-ch:
-				next <- str
+			case buffer := <-ch:
+				next <- buffer
 			}
 		}
 	}()

@@ -16,6 +16,7 @@ type Config struct {
 // Input defines the input driver and configuration flags passed to the driver
 type Input struct {
 	Driver string
+	Parser string
 	Config map[string]interface{}
 }
 

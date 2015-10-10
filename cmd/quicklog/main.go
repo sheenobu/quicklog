@@ -4,6 +4,7 @@ import (
 	_ "github.com/sheenobu/quicklog/filters"
 	_ "github.com/sheenobu/quicklog/inputs"
 	_ "github.com/sheenobu/quicklog/outputs"
+	_ "github.com/sheenobu/quicklog/parsers"
 
 	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"

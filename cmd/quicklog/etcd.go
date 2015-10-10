@@ -48,6 +48,7 @@ func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
 	chain := ql.Chain{
 		Input:        ql.GetInput(cfg.Input.Driver),
 		InputConfig:  cfg.Input.Config,
+		Parser:       ql.GetParser(cfg.Input.Parser),
 		Output:       ql.GetOutput(cfg.Output.Driver),
 		OutputConfig: cfg.Output.Config,
 	}
@@ -134,6 +135,11 @@ func syncFromEtcd(ctx context.Context, root string, cl client.KeysAPI, cfg *conf
 		return err
 	}
 
+	inputParserResponse, err := cl.Get(ctx, root+"/input/parser", nil)
+	if err != nil {
+		return err
+	}
+
 	inputDriverCfg, err := cl.Get(ctx, root+"/input/config", nil)
 	if err != nil {
 		return err
@@ -151,6 +157,7 @@ func syncFromEtcd(ctx context.Context, root string, cl client.KeysAPI, cfg *conf
 	var input config.Input
 	var output config.Output
 	input.Driver = inputDriverResponse.Node.Value
+	input.Parser = inputParserResponse.Node.Value
 	output.Driver = outputDriverResponse.Node.Value
 
 	err = json.Unmarshal([]byte(inputDriverCfg.Node.Value), &input.Config)

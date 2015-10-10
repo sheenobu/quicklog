@@ -19,7 +19,7 @@ func init() {
 
 type natsIn struct{}
 
-func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Line, config map[string]interface{}) error {
+func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
 
 	log.Log(ctx).Debug("Starting input handler", "handler", "nats")
 
@@ -60,7 +60,7 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Line, config map[st
 		return err
 	}
 
-	recvCh := make(chan ql.Line)
+	recvCh := make(chan []byte)
 	c.BindRecvChan(publish, recvCh)
 
 	go func() {
@@ -69,7 +69,7 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Line, config map[st
 		for {
 			select {
 			case line := <-recvCh:
-				next <- line
+				next <- ql.CreateBuffer(line, map[string]interface{}{})
 			case <-ctx.Done():
 				return
 			}

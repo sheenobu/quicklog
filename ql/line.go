@@ -7,5 +7,5 @@ import (
 // A Line is a distinct log line being processed by quicklog
 type Line struct {
 	Timestamp time.Time
-	Data      map[string]string
+	Data      map[string]interface{}
 }
