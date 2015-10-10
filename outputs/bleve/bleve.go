@@ -48,6 +48,7 @@ func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config 
 		for {
 			select {
 			case line := <-prev:
+				line.Data["timestamp"] = line.Timestamp
 				err := out.index.Index(uuid.New(), line.Data)
 				if err != nil {
 					log.Log(ctx).Error("Error indexing line", "error", err)
