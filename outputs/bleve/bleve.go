@@ -35,13 +35,21 @@ func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config 
 			}
 		}
 
-		listen := ":8080"
-
-		if config["http.listen"] != nil {
-			listen = config["http.listen"].(string)
+		l, ok := config["http"].(map[string]interface{})
+		if !ok {
+			return
 		}
 
-		go out.startHttpServer(listen)
+		enabled, ok := l["enable"].(bool)
+		if !ok {
+			return
+		}
+
+		if !enabled {
+			return
+		}
+
+		go out.startHttpServer(ctx, l)
 	})
 
 	go func() {

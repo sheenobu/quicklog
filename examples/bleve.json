@@ -11,7 +11,14 @@
 		}
 	],
 	"output": {
-		"driver":"bleve"
+		"driver":"bleve",
+		"config": {
+			"http": {
+				"enable": true,
+				"listen": ":9994",
+				"webroot": "./static"
+			}
+		}
 	}
 }
 
