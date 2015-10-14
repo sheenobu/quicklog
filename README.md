@@ -56,6 +56,7 @@ Main engine
  * uuid - Add a randomly generated uuid to the message data, as a custom field
  * uppercase - Uppercases the 'message' field
  * rename\_field - Renames a field
+ * hostname - Add the current hostname as a field
 
 ### outputs
 
