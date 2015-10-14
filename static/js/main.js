@@ -19,7 +19,7 @@ var SearchRow = React.createClass({
 		return (
 			<tr>
 				<td>{this.props.row.fields.timestamp}</td>
-				<td>{this.props.row.fields.msg}</td>
+				<td>{this.props.row.fields.message}</td>
 				<td><button className="btn btn-primary btn-small" onClick={this.showDetails}>Details</button>
 					<div className="modal" role="dialog" ref="modal">
 						<div className="modal-dialog" role="document">
@@ -46,25 +46,47 @@ var SearchRow = React.createClass({
 
 var SearchResults = React.createClass({
 	render: function() {
-		var rows = this.props.data.map(function(entry) {
+		var rows = this.props.data.hits.map(function(entry) {
 			return (
-				<SearchRow row={entry}/>
+				<SearchRow key={entry.id} row={entry}/>
 			);
 		});
 
+		var pages = [];
+
+		var total = this.props.data.total_hits;
+		if(total != 0){
+
+			var pageSize = this.props.data.request.size;
+
+			for(var i = 0; i < total/pageSize; i++){
+				pages.push(
+					<button onClick={this.props.setPage.bind(this, i, pageSize)} type="btn">{i}</button>
+				);
+			}
+		}
+
 		return (
-			<table className="table table-striped table-bordered">
-				<thead>
-					<tr>
-						<th>Timestamp</th>
-						<th>Message</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					{rows}
-				</tbody>
-			</table>
+			<div>
+				<div>
+					<label>From: {this.props.data.request.from}</label><br/>
+					<label>Size: {this.props.data.request.size}</label><br/>
+					<label>Total: {this.props.data.total_hits}</label>
+				</div>
+				{pages}
+				<table className="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Timestamp</th>
+							<th>Message</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{rows}
+					</tbody>
+				</table>
+			</div>
 		);
 	}
 })
@@ -96,7 +118,7 @@ var SearchForm = React.createClass({
 
 var SearchApplication = React.createClass({
 	getInitialState: function() {
-		return {data: []};
+		return {query: "", from: 0, data: { hits: [], total_hits: 0, request: { from: 0, size: 0 } } };
 	},
 	search: function(query) {
 		$.ajax({
@@ -109,17 +131,23 @@ var SearchApplication = React.createClass({
 				"size": 10,
 				"fields": [ "*" ],
 				"query": {
-					"query": query,
+					"query": query
 				},
+				"from": this.state.from,
 				"explain": false,
-				"hightlight": {
-					"fields": [ "msg", "timestamp" ]
+				"highlight": {
+	//				"fields": [ "message", "timestamp" ]
 				}
 			}),
 			success: function(data) {
-				this.setState({data: data.hits});
+				this.setState({query: query, data: data, from: this.state.from});
 			}.bind(this)
 		})
+	},
+	setPage: function(page, size) {
+		var st = this.state;
+		st.from = page * size;
+		this.search(st.query);
 	},
 	render: function() {
 		return (
@@ -132,13 +160,13 @@ var SearchApplication = React.createClass({
 
 				<div className="row">
 					<div className="col-md-12">
-						<SearchForm onSearch={this.search}/>
+						<SearchForm onSearch={this.search} />
 					</div>
 				</div>
 				
 				<div className="row">
 					<div className="col-md-12">
-						<SearchResults data={this.state.data} />
+						<SearchResults data={this.state.data} setPage={this.setPage} />
 					</div>
 				</div>
 			</div>
