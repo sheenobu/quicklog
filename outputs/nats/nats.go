@@ -66,7 +66,7 @@ func (out *natsOut) Handle(ctx context.Context, prev <-chan ql.Line, config map[
 		for {
 			select {
 			case line := <-prev:
-				err = c.Publish(publish, line.Data)
+				err = c.Publish(publish, line)
 				if err != nil {
 					log.Log(ctx).Error("Error publishing to nats connection", "error", err)
 				}
