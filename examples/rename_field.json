@@ -1,0 +1,20 @@
+{
+	"input": {
+		"driver":"stdin",
+		"parser": "json"
+	},
+	"filters": [
+		{
+			"driver":"rename_field",
+			"config": {
+				"source": "msg",
+				"dest": "message"
+			}
+		}
+	],
+	"output": {
+		"driver":"debug"
+	}
+}
+
+
