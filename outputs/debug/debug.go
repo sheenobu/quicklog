@@ -39,6 +39,10 @@ func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config m
 			select {
 			case line := <-prev:
 				os.Stdout.Write([]byte(fmt.Sprintf("Time: [%v]\n", line.Timestamp)))
+				if line.Data["message"] == nil {
+					line.Data["message"] = ""
+				}
+
 				os.Stdout.Write([]byte("Message: " + line.Data["message"].(string) + "\n"))
 
 				if !printFields {
