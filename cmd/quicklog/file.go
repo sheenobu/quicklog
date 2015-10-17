@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/golibs/managed"
 
 	"github.com/sheenobu/quicklog/config"
 	"github.com/sheenobu/quicklog/ql"
@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func startFileQuicklog(ctx context.Context, app *apps.App) {
+func startFileQuicklog(ctx context.Context, system *managed.System) {
 
 	// load config
 	cfg, err := config.LoadFile(configFile)
@@ -37,7 +37,7 @@ func startFileQuicklog(ctx context.Context, app *apps.App) {
 	}
 
 	// execute chain
-	app.SpawnSimple("chain", chain.Execute)
+	system.Add(managed.Simple("chain", chain.Execute))
 
 	return
 }

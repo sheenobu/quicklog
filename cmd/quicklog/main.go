@@ -6,14 +6,13 @@ import (
 	_ "github.com/sheenobu/quicklog/outputs"
 	_ "github.com/sheenobu/quicklog/parsers"
 
-	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/golibs/managed"
 
 	"golang.org/x/net/context"
 
 	"flag"
 	"os"
-	"os/signal"
 )
 
 var configFile string
@@ -37,25 +36,19 @@ func main() {
 	ctx = log.NewContext(ctx)
 	log.Log(ctx).Info("Starting quicklog")
 
-	// Setup app
-	app := apps.NewApp("quicklog")
-	app.StartWithContext(ctx)
+	// Setup system
+	system := managed.NewSystem("quicklog")
+	system.StartWithContext(ctx)
 
-	// register signal listeners
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
-	go func() {
-		s := <-c
-		log.Log(ctx).Info("Got interrupt signal, stopping quicklog", "signal", s)
-		app.Stop()
-	}()
+	// Register signal listeners
+	system.RegisterForStop(os.Interrupt, os.Kill)
 
 	switch {
 	case etcdEndpoints != "" && instanceName != "":
-		startEtcdQuicklog(ctx, app)
+		startEtcdQuicklog(ctx, system)
 	case configFile != "":
-		startFileQuicklog(ctx, app)
+		startFileQuicklog(ctx, system)
 	}
 
-	app.Wait()
+	system.Wait()
 }

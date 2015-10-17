@@ -6,8 +6,8 @@ import (
 	"github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 
-	"github.com/sheenobu/golibs/apps"
 	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/golibs/managed"
 	"github.com/sheenobu/quicklog/config"
 	"github.com/sheenobu/quicklog/ql"
 
@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
+func startEtcdQuicklog(mainCtx context.Context, system *managed.System) {
 
 	log.Log(mainCtx).Debug("Connecting to endpoint", "endpoints", strings.Split(etcdEndpoints, ","))
 	etcdCfg := client.Config{
@@ -34,8 +34,8 @@ func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
 
 	kapi := client.NewKeysAPI(c)
 
-	chainApp := apps.NewApp("app-chain-" + instanceName)
-	app.SpawnApp(chainApp)
+	chainApp := managed.NewSystem("app-chain-" + instanceName)
+	system.SpawnSystem(chainApp)
 
 	var cfg config.Config
 
@@ -58,9 +58,9 @@ func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
 		chain.FilterConfig = cfg.Filters[0].Config
 	}
 
-	chainApp.SpawnSimple("chain-sub-"+instanceName, chain.Execute)
+	chainApp.Add(managed.Simple("chain-sub-"+instanceName, chain.Execute))
 
-	app.SpawnSimple("etcd", func(ctx context.Context) {
+	system.Add(managed.Simple("etcd", func(ctx context.Context) {
 
 		w := kapi.Watcher(root+"/reload", &client.WatcherOptions{
 			Recursive: false,
@@ -105,8 +105,8 @@ func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
 
 					chainApp.Stop()
 					<-time.After(1 * time.Second)
-					chainApp = apps.NewApp("app-chain-" + instanceName)
-					app.SpawnApp(chainApp)
+					chainApp = managed.NewSystem("app-chain-" + instanceName)
+					system.SpawnSystem(chainApp)
 
 					// setup chain
 					chain = ql.Chain{
@@ -121,12 +121,12 @@ func startEtcdQuicklog(mainCtx context.Context, app *apps.App) {
 						chain.FilterConfig = newCfg.Filters[0].Config
 					}
 
-					chainApp.SpawnSimple("chain-sub-"+instanceName, chain.Execute)
+					chainApp.Add(managed.Simple("chain-sub-"+instanceName, chain.Execute))
 				}
 				//TODO: (re)load config
 			}
 		}
-	})
+	}))
 }
 
 func syncFromEtcd(ctx context.Context, root string, cl client.KeysAPI, cfg *config.Config) error {
