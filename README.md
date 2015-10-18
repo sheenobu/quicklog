@@ -40,15 +40,16 @@ Main engine
 
 ## inputs 
 
- * stdin - Read 'message' field from standard input
- * tcp - Read 'message' field from TCP input
+ * stdin - Read from standard input
+ * tcp - Read from TCP input
+ * udp - Read from UDP input
  * nats - Read the entire log entry from a nats queue
 
 ## parsers
 
  * plain - parse input as a plain message
  * json - parse input as json
- * otto - parse input via javascript
+ * otto - parse input via javascript function
  * csv - parse input as a CSV entry (TODO)
 
 ### filters
