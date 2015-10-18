@@ -1,0 +1,21 @@
+{
+	"input": {
+		"driver":"udp",
+		"config": {
+			"listen": "127.0.0.1:8080"
+		}
+	},
+	"filters": [
+		{
+			"driver":"uuid",
+			"config": {
+				"field": "messageID"
+			}
+		}
+	],
+	"output": {
+		"driver":"debug"
+	}
+}
+
+
