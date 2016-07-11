@@ -8,8 +8,8 @@ import (
 	"github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 
-	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/quicklog/config"
+	"github.com/sheenobu/quicklog/log"
 
 	"strings"
 )

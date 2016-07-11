@@ -1,7 +1,7 @@
 package hostname
 
 import (
-	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 	"os"

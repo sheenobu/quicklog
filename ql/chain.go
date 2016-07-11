@@ -1,7 +1,7 @@
 package ql
 
 import (
-	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/quicklog/log"
 	"golang.org/x/net/context"
 
 	"time"

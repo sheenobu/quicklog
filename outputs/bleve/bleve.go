@@ -2,7 +2,7 @@ package bleve
 
 import (
 	"github.com/blevesearch/bleve"
-	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 

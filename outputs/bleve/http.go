@@ -4,7 +4,7 @@ import (
 	bleveHttp "github.com/blevesearch/bleve/http"
 	"net/http"
 
-	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/quicklog/log"
 	"golang.org/x/net/context"
 )
 

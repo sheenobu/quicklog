@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/golibs/managed"
+	"github.com/sheenobu/quicklog/log"
 
 	"github.com/sheenobu/quicklog/config"
 	"github.com/sheenobu/quicklog/ql"

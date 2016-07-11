@@ -3,9 +3,8 @@ package main
 // ql2etcd pushes a quicklog json config file to etcd
 
 import (
-	"github.com/sheenobu/golibs/log"
-
 	"github.com/sheenobu/quicklog/config"
+	"github.com/sheenobu/quicklog/log"
 
 	"os"
 

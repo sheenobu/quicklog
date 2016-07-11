@@ -6,8 +6,8 @@ import (
 	_ "github.com/sheenobu/quicklog/outputs"
 	_ "github.com/sheenobu/quicklog/parsers"
 
-	"github.com/sheenobu/golibs/log"
 	"github.com/sheenobu/golibs/managed"
+	"github.com/sheenobu/quicklog/log"
 
 	"golang.org/x/net/context"
 

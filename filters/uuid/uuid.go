@@ -2,7 +2,7 @@ package uuid
 
 import (
 	"code.google.com/p/go-uuid/uuid"
-	"github.com/sheenobu/golibs/log"
+	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
 )
