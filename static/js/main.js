@@ -18,9 +18,9 @@ var SearchRow = React.createClass({
 
 		return (
 			<tr>
-				<td>{this.props.row.fields.timestamp}</td>
-				<td>{this.props.row.fields.message}</td>
-				<td><button className="btn btn-primary btn-small" onClick={this.showDetails}>Details</button>
+				<td className="col-xs-4 col-md-3">{this.props.row.fields.timestamp}</td>
+				<td className="col-xs-6 col-md-7">{this.props.row.fields.message}</td>
+				<td className="col-xs-2 col-md-2"><button className="btn btn-primary btn-small pull-right" onClick={this.showDetails}>Details</button>
 					<div className="modal" role="dialog" ref="modal">
 						<div className="modal-dialog" role="document">
 							<div className="modal-content">
@@ -74,10 +74,10 @@ var SearchResults = React.createClass({
 					<label>Total: {this.props.data.total_hits}</label>
 				</div>
 				{pages}
-				<table className="table table-striped table-bordered">
+				<table className="table table-striped table-condensed table-hover">
 					<thead>
 						<tr>
-							<th>Timestamp</th>
+							<th className="col-xs-2">Timestamp</th>
 							<th>Message</th>
 							<th></th>
 						</tr>
@@ -121,28 +121,54 @@ var SearchApplication = React.createClass({
 		return {query: "", from: 0, data: { hits: [], total_hits: 0, request: { from: 0, size: 0 } } };
 	},
 	search: function(query) {
-		$.ajax({
-			url: "/search",
-			dataType: "json",
-			cache: false,
-			method: "POST",
-			contentType : 'application/json',
-			data: JSON.stringify({
-				"size": 10,
-				"fields": [ "*" ],
-				"query": {
-					"query": query
-				},
-				"from": this.state.from,
-				"explain": false,
-				"highlight": {
-	//				"fields": [ "message", "timestamp" ]
-				}
-			}),
-			success: function(data) {
-				this.setState({query: query, data: data, from: this.state.from});
-			}.bind(this)
-		})
+
+		if (query == "*") {
+			$.ajax({
+				url: "/search",
+				dataType: "json",
+				cache: false,
+				method: "POST",
+				contentType : 'application/json',
+				data: JSON.stringify({
+					"size": 10,
+					"fields": [ "*" ],
+					"query": {
+						"match_all": "*"
+					},
+					"from": this.state.from,
+					"explain": false,
+					"highlight": {
+		//				"fields": [ "message", "timestamp" ]
+					}
+				}),
+				success: function(data) {
+					this.setState({query: query, data: data, from: this.state.from});
+				}.bind(this)
+			})
+		} else {
+			$.ajax({
+				url: "/search",
+				dataType: "json",
+				cache: false,
+				method: "POST",
+				contentType : 'application/json',
+				data: JSON.stringify({
+					"size": 10,
+					"fields": [ "*" ],
+					"query": {
+						"query": query
+					},
+					"from": this.state.from,
+					"explain": false,
+					"highlight": {
+		//				"fields": [ "message", "timestamp" ]
+					}
+				}),
+				success: function(data) {
+					this.setState({query: query, data: data, from: this.state.from});
+				}.bind(this)
+			})
+		}
 	},
 	setPage: function(page, size) {
 		var st = this.state;
@@ -163,7 +189,7 @@ var SearchApplication = React.createClass({
 						<SearchForm onSearch={this.search} />
 					</div>
 				</div>
-				
+
 				<div className="row">
 					<div className="col-md-12">
 						<SearchResults data={this.state.data} setPage={this.setPage} />
