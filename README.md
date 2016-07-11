@@ -1,5 +1,7 @@
 # quicklog
 
+[![Join the chat at https://gitter.im/sheenobu/quicklog](https://badges.gitter.im/sheenobu/quicklog.svg)](https://gitter.im/sheenobu/quicklog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Simple log aggregator, parser.
 
 Example configurations are in examples/
