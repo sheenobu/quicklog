@@ -6,8 +6,11 @@ import (
 	_ "github.com/sheenobu/quicklog/outputs"
 	_ "github.com/sheenobu/quicklog/parsers"
 
-	"github.com/sheenobu/golibs/managed"
+	"github.com/sheenobu/quicklog/config"
 	"github.com/sheenobu/quicklog/log"
+	"github.com/sheenobu/quicklog/ql"
+
+	"github.com/sheenobu/golibs/managed"
 
 	"golang.org/x/net/context"
 
@@ -51,4 +54,20 @@ func main() {
 	}
 
 	system.Wait()
+}
+
+func fromConfig(cfg *config.Config) *ql.Chain {
+	chain := ql.Chain{
+		Input:        ql.GetInput(cfg.Input.Driver),
+		InputConfig:  cfg.Input.Config,
+		Parser:       ql.GetParser(cfg.Input.Parser),
+		Output:       ql.GetOutput(cfg.Output.Driver),
+		OutputConfig: cfg.Output.Config,
+	}
+	if len(cfg.Filters) >= 1 {
+		chain.Filter = ql.GetFilter(cfg.Filters[0].Driver)
+		chain.FilterConfig = cfg.Filters[0].Config
+	}
+
+	return &chain
 }
