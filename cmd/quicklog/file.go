@@ -13,6 +13,8 @@ import (
 
 func startFileQuicklog(ctx context.Context, system *managed.System) {
 
+	log.Log(ctx).Info("Loading config from file", "file", configFile)
+
 	// load config
 	cfg, err := config.LoadFile(configFile)
 	if err != nil {
@@ -22,7 +24,7 @@ func startFileQuicklog(ctx context.Context, system *managed.System) {
 	}
 
 	// setup chain
-	chain := fromConfig(&cfg)
+	chain := fromConfig(cfg)
 
 	// execute chain
 	system.Add(managed.Simple("chain", chain.Execute))

@@ -9,7 +9,6 @@ import (
 	"github.com/sheenobu/golibs/managed"
 	"github.com/sheenobu/quicklog/config"
 	"github.com/sheenobu/quicklog/log"
-	"github.com/sheenobu/quicklog/ql"
 
 	"strconv"
 	"strings"
@@ -18,7 +17,10 @@ import (
 
 func startEtcdQuicklog(mainCtx context.Context, system *managed.System) {
 
+	log.Log(mainCtx).Info("Loading config from etcd")
+
 	log.Log(mainCtx).Debug("Connecting to endpoint", "endpoints", strings.Split(etcdEndpoints, ","))
+
 	etcdCfg := client.Config{
 		Endpoints: strings.Split(etcdEndpoints, ","),
 	}
@@ -98,17 +100,7 @@ func startEtcdQuicklog(mainCtx context.Context, system *managed.System) {
 					system.SpawnSystem(chainApp)
 
 					// setup chain
-					chain = ql.Chain{
-						Input:        ql.GetInput(newCfg.Input.Driver),
-						InputConfig:  newCfg.Input.Config,
-						Output:       ql.GetOutput(newCfg.Output.Driver),
-						OutputConfig: newCfg.Output.Config,
-					}
-
-					if len(newCfg.Filters) >= 1 {
-						chain.Filter = ql.GetFilter(newCfg.Filters[0].Driver)
-						chain.FilterConfig = newCfg.Filters[0].Config
-					}
+					chain = fromConfig(&newCfg)
 
 					chainApp.Add(managed.Simple("chain-sub-"+instanceName, chain.Execute))
 				}
