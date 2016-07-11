@@ -60,8 +60,12 @@ var SearchResults = React.createClass({
 			var pageSize = this.props.data.request.size;
 
 			for(var i = 0; i < total/pageSize; i++){
+				var activeClass="";
+				if (this.props.page == i) {
+					activeClass = "active";
+				}
 				pages.push(
-					<button onClick={this.props.setPage.bind(this, i, pageSize)} type="btn">{i}</button>
+					<li className={activeClass}><a href="#" onClick={this.props.setPage.bind(this, i, pageSize)}>{i}</a></li>
 				);
 			}
 		}
@@ -73,7 +77,9 @@ var SearchResults = React.createClass({
 					<label>Size: {this.props.data.request.size}</label><br/>
 					<label>Total: {this.props.data.total_hits}</label>
 				</div>
-				{pages}
+				<ul className="pagination">
+					{pages}
+				</ul>
 				<table className="table table-striped table-condensed table-hover">
 					<thead>
 						<tr>
@@ -105,12 +111,12 @@ var SearchForm = React.createClass({
 	render: function() {
 		return (
 			<form className="form-inline" onSubmit={this.handleSubmit}>
-				<div className="form-group">
-					<div className="input-group">
-						<input placeholder="query" className="form-control" ref="query" type="text"/>
-					</div>
+				<div className="input-group">
+					<input placeholder="Search Query" className="form-control" ref="query" type="text"/>
+					<span className="input-group-btn">
+						<button type="submit" className="btn btn-primary">Search</button>
+					</span>
 				</div>
-				<button type="submit" className="btn btn-primary">Search</button>
 			</form>
 		);
 	}
@@ -173,6 +179,7 @@ var SearchApplication = React.createClass({
 	setPage: function(page, size) {
 		var st = this.state;
 		st.from = page * size;
+		st.page = page;
 		this.search(st.query);
 	},
 	render: function() {
@@ -192,7 +199,7 @@ var SearchApplication = React.createClass({
 
 				<div className="row">
 					<div className="col-md-12">
-						<SearchResults data={this.state.data} setPage={this.setPage} />
+						<SearchResults page={this.state.page} data={this.state.data} setPage={this.setPage} />
 					</div>
 				</div>
 			</div>
