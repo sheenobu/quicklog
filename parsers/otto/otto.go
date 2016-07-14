@@ -4,18 +4,23 @@ import (
 	"github.com/sheenobu/quicklog/ql"
 
 	"github.com/robertkrimen/otto"
-	_ "github.com/robertkrimen/otto/underscore"
+	_ "github.com/robertkrimen/otto/underscore" // enable javascript underscore support for otto
 )
 
-type OttoParser struct {
+// Parser runs data through a javascript engine to execute parsing
+type Parser struct {
 	o *otto.Otto
 }
 
 func init() {
-	ql.RegisterParser("otto", &OttoParser{o: otto.New()})
+	ql.RegisterParser("otto", &Parser{o: otto.New()})
 }
 
-func (op *OttoParser) Parse(buffer []byte, line *ql.Line, config map[string]interface{}) error {
+// Parse parses the buffer and adds it to the line struct
+// the config[otto.script] should be a javascript function which
+// returns a hash. Each key in the hash will be added to the line Data
+// and will be indexed
+func (op *Parser) Parse(buffer []byte, line *ql.Line, config map[string]interface{}) error {
 
 	script := config["otto.script"].(string)
 
