@@ -20,16 +20,49 @@ type Chain struct {
 	OutputConfig map[string]interface{}
 }
 
-// Execute executes the chain and waits for its completion
-func (ch *Chain) Execute(ctx context.Context) {
+func (ch *Chain) parserLoop(ctx context.Context, bufferChan <-chan Buffer, inputChan chan<- Line) {
 
-	inputHandler := ch.Input
-	outputHandler := ch.Output
 	parser := ch.Parser
 
 	if parser == nil {
 		parser = GetParser("plain")
 	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case buffer := <-bufferChan:
+			l := Line{
+				Data:      make(map[string]interface{}),
+				Timestamp: time.Now(),
+			}
+
+			if len(buffer.Data) == 0 {
+				continue // skip line
+			}
+
+			if err := parser.Parse(buffer.Data, &l, ch.InputConfig); err != nil {
+				log.Log(ctx).Error("Error parsing incoming data", "error", err)
+				continue
+			}
+
+			if buffer.Metadata != nil {
+				for k, v := range buffer.Metadata {
+					l.Data[k] = v
+				}
+			}
+
+			inputChan <- l
+		}
+	}
+}
+
+// Execute executes the chain and waits for its completion
+func (ch *Chain) Execute(ctx context.Context) {
+
+	inputHandler := ch.Input
+	outputHandler := ch.Output
 
 	var chann chan Line
 
@@ -41,36 +74,7 @@ func (ch *Chain) Execute(ctx context.Context) {
 		return
 	}
 
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case buffer := <-bufferChan:
-				l := Line{
-					Data:      make(map[string]interface{}),
-					Timestamp: time.Now(),
-				}
-
-				if len(buffer.Data) == 0 {
-					continue // skip line
-				}
-
-				if err := parser.Parse(buffer.Data, &l, ch.InputConfig); err != nil {
-					log.Log(ctx).Error("Error parsing incoming data", "error", err)
-					continue
-				}
-
-				if buffer.Metadata != nil {
-					for k, v := range buffer.Metadata {
-						l.Data[k] = v
-					}
-				}
-
-				inputChan <- l
-			}
-		}
-	}()
+	go ch.parserLoop(ctx, bufferChan, inputChan)
 
 	if ch.Filter != nil {
 		filterHandler := ch.Filter
