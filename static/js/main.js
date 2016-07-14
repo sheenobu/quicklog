@@ -128,7 +128,7 @@ var SearchApplication = React.createClass({
 	},
 	search: function(query) {
 
-		if (query == "*") {
+		if (query == "" || query == "*") {
 			$.ajax({
 				url: "/search",
 				dataType: "json",
@@ -137,15 +137,7 @@ var SearchApplication = React.createClass({
 				contentType : 'application/json',
 				data: JSON.stringify({
 					"size": 10,
-					"fields": [ "*" ],
-					"query": {
-						"match_all": "*"
-					},
-					"from": this.state.from,
-					"explain": false,
-					"highlight": {
-		//				"fields": [ "message", "timestamp" ]
-					}
+					"from": this.state.from
 				}),
 				success: function(data) {
 					this.setState({query: query, data: data, from: this.state.from});
@@ -160,15 +152,8 @@ var SearchApplication = React.createClass({
 				contentType : 'application/json',
 				data: JSON.stringify({
 					"size": 10,
-					"fields": [ "*" ],
-					"query": {
-						"query": query
-					},
-					"from": this.state.from,
-					"explain": false,
-					"highlight": {
-		//				"fields": [ "message", "timestamp" ]
-					}
+					"query": query,
+					"from": this.state.from
 				}),
 				success: function(data) {
 					this.setState({query: query, data: data, from: this.state.from});
