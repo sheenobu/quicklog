@@ -5,12 +5,14 @@ import (
 )
 
 func init() {
-	ql.RegisterParser("plain", &PlainParser{})
+	ql.RegisterParser("plain", &Parser{})
 }
 
-type PlainParser struct{}
+// Parser treats every input buffer as a single line
+type Parser struct{}
 
-func (pp *PlainParser) Parse(buffer []byte, line *ql.Line, config map[string]interface{}) error {
+// Parse adds the buffer to the Line data as the 'message' key
+func (pp *Parser) Parse(buffer []byte, line *ql.Line, _ map[string]interface{}) error {
 	line.Data["message"] = string(buffer)
 	return nil
 }
