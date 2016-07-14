@@ -9,7 +9,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (out *bleveOutput) startHTTPServer(ctx context.Context, cfg map[string]interface{}) {
+func (out *bleveOutput) startHTTPServer(ctx context.Context, cfg map[string]interface{}) error {
 
 	listen := ":8080"
 
@@ -33,7 +33,7 @@ func (out *bleveOutput) startHTTPServer(ctx context.Context, cfg map[string]inte
 		http.Handle("/", assets)
 	}
 
-	http.ListenAndServe(listen, nil)
+	return http.ListenAndServe(listen, nil)
 }
 
 // SearchRequest is the JSON payload for the search request
@@ -46,7 +46,9 @@ type SearchRequest struct {
 func (out *bleveOutput) searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req SearchRequest
-	defer r.Body.Close()
+	defer func() {
+		_ = r.Body.Close()
+	}()
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		panic(err) //TODO: handle error properly

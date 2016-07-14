@@ -51,7 +51,10 @@ func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config 
 			return
 		}
 
-		go out.startHTTPServer(ctx, l)
+		go func() {
+			err := out.startHTTPServer(ctx, l)
+			log.Log(ctx).Error("Error starting bleve HTTP server", "error", err)
+		}()
 	})
 
 	go func() {
