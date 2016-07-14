@@ -57,7 +57,10 @@ func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Buffer, config m
 					m := make(map[string]interface{})
 					m["tcp.source"] = conn.RemoteAddr().String()
 
-					ch <- ql.CreateBuffer(line, m)
+					ch <- ql.Buffer{
+						Data:     line,
+						Metadata: m,
+					}
 				}
 			}(conn)
 		}

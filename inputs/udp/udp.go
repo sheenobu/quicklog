@@ -54,7 +54,10 @@ func (udp *udpInput) Handle(ctx context.Context, next chan<- ql.Buffer, config m
 
 			m := make(map[string]interface{})
 			m["udp.source"] = addr.String()
-			ch <- ql.CreateBuffer(buffer[:size], m)
+			ch <- ql.Buffer{
+				Data:     buffer[:size],
+				Metadata: m,
+			}
 		}
 	}()
 

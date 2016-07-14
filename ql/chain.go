@@ -53,13 +53,19 @@ func (ch *Chain) Execute(ctx context.Context) {
 					Timestamp: time.Now(),
 				}
 
-				if err := parser.Parse(buffer.data, &l, ch.InputConfig); err != nil {
+				if len(buffer.Data) == 0 {
+					continue // skip line
+				}
+
+				if err := parser.Parse(buffer.Data, &l, ch.InputConfig); err != nil {
 					log.Log(ctx).Error("Error parsing incoming data", "error", err)
 					continue
 				}
 
-				for k, v := range buffer.metadata {
-					l.Data[k] = v
+				if buffer.Metadata != nil {
+					for k, v := range buffer.Metadata {
+						l.Data[k] = v
+					}
 				}
 
 				inputChan <- l

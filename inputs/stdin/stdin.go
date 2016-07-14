@@ -36,7 +36,7 @@ func (s *stdin) Handle(ctx context.Context, next chan<- ql.Buffer, config map[st
 				if err != nil {
 					break
 				}
-				s.ch <- ql.CreateBuffer(line, make(map[string]interface{}))
+				s.ch <- ql.Buffer{Data: line}
 			}
 		}()
 	})

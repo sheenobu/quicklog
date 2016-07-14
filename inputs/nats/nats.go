@@ -75,7 +75,10 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[
 				}
 
 				delete(line.Data, "message")
-				next <- ql.CreateBuffer([]byte(msg), line.Data)
+				next <- ql.Buffer{
+					Data:     []byte(msg),
+					Metadata: line.Data,
+				}
 			case <-ctx.Done():
 				return
 			}

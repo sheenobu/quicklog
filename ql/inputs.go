@@ -4,16 +4,10 @@ import (
 	"golang.org/x/net/context"
 )
 
+// A Buffer is a series of characters and key-value data that get put on the pipeline
 type Buffer struct {
-	data     []byte
-	metadata map[string]interface{}
-}
-
-func CreateBuffer(data []byte, metadata map[string]interface{}) Buffer {
-	return Buffer{
-		data:     data,
-		metadata: metadata,
-	}
+	Data     []byte
+	Metadata map[string]interface{}
 }
 
 // An InputHandler is a handler that waits for input and sends it to the line channel
