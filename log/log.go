@@ -32,6 +32,7 @@ func Log(ctx context.Context) log15.Logger {
 	l, ok := FromContext(ctx)
 	if !ok {
 		l = log15.New()
+		l.SetHandler(log15.DiscardHandler())
 	}
 	return l
 }
