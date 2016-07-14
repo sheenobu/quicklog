@@ -14,7 +14,7 @@ go install github.com/sheenobu/quicklog/cmd/...
 
 File config:
 
-	$ quicklog -configFile quicklog.josn
+	$ quicklog -configFile quicklog.json
 
 Etcd config:
 
