@@ -61,17 +61,22 @@ func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[
 	}
 
 	recvCh := make(chan ql.Line)
-	c.BindRecvChan(publish, recvCh)
+	sub, err := c.BindRecvChan(publish, recvCh)
+	if err != nil {
+		log.Log(ctx).Error("Error listening on nats receive channel", "error", err)
+		return err
+	}
 
 	go func() {
+		defer sub.Unsubscribe()
 		defer c.Close()
 
 		for {
 			select {
 			case line := <-recvCh:
-				msg := ""
-				if line.Data["message"] != nil {
-					msg = line.Data["message"].(string)
+				var msg string
+				if m, ok := line.Data["message"]; ok {
+					msg = m.(string)
 				}
 
 				delete(line.Data, "message")
