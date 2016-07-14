@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (out *bleveOutput) startHttpServer(ctx context.Context, cfg map[string]interface{}) {
+func (out *bleveOutput) startHTTPServer(ctx context.Context, cfg map[string]interface{}) {
 
 	listen := ":8080"
 

@@ -51,7 +51,7 @@ func (out *bleveOutput) Handle(ctx context.Context, prev <-chan ql.Line, config 
 			return
 		}
 
-		go out.startHttpServer(ctx, l)
+		go out.startHTTPServer(ctx, l)
 	})
 
 	go func() {
