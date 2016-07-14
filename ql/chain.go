@@ -36,8 +36,7 @@ func (ch *Chain) Execute(ctx context.Context) {
 	bufferChan := make(chan Buffer)
 	inputChan := make(chan Line)
 
-	err := inputHandler.Handle(ctx, bufferChan, ch.InputConfig)
-	if err != nil {
+	if err := inputHandler.Handle(ctx, bufferChan, ch.InputConfig); err != nil {
 		log.Log(ctx).Crit("Error creating input handler", "error", err)
 		return
 	}
@@ -76,8 +75,7 @@ func (ch *Chain) Execute(ctx context.Context) {
 	if ch.Filter != nil {
 		filterHandler := ch.Filter
 		chann = make(chan Line)
-		err = filterHandler.Handle(ctx, inputChan, chann, ch.FilterConfig)
-		if err != nil {
+		if err := filterHandler.Handle(ctx, inputChan, chann, ch.FilterConfig); err != nil {
 			log.Log(ctx).Crit("Error creating filter handler", "error", err)
 			return
 		}
@@ -86,8 +84,7 @@ func (ch *Chain) Execute(ctx context.Context) {
 		chann = inputChan
 	}
 
-	err = outputHandler.Handle(ctx, chann, ch.OutputConfig)
-	if err != nil {
+	if err := outputHandler.Handle(ctx, chann, ch.OutputConfig); err != nil {
 		log.Log(ctx).Crit("Error creating output handler", "error", err)
 		return
 	}
