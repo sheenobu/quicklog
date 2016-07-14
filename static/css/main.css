@@ -1,3 +1,40 @@
 .row {
 	margin-bottom: 15px;
 }
+
+.navbar-default {
+	border: none;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	background-color: #333333;
+}
+
+.navbar-brand {
+	width: 175px;
+	background-color: #22aadd;
+}
+
+.appbody {
+	margin-top: 10px;
+}
+
+#sidebar-wrapper {
+	background: #333333;
+}
+
+.navbar-brand:hover {
+	background-color: #22aadd !important;
+	border: none !important;
+}
+
+.navbar-brand:focus {
+	background-color: #22aadd !important;
+	border: none !important;
+}
+
+
+body { padding-top: 50px; }
+
+.pagination {
+	margin: 0px;
+}

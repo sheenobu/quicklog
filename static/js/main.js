@@ -1,10 +1,22 @@
 
-
 var Header = React.createClass({
 	render: function() {
 		return (
-			<h1>quicklog log search</h1>
+			<nav className="navbar navbar-default navbar-fixed-top">
+				<div className="container-fluid">
+				    <div className="navbar-header">
+					  <a className="navbar-brand" href="#">quicklog</a>
+					</div>
+				</div>
+			</nav>
 		);
+	}
+});
+
+var Time = React.createClass({
+	render: function() {
+		var val = moment(this.props.val).format("YYYY-MM-DD hh:mm A");
+		return (<span>{val}</span>);
 	}
 });
 
@@ -18,7 +30,7 @@ var SearchRow = React.createClass({
 
 		return (
 			<tr>
-				<td className="col-xs-4 col-md-3">{this.props.row.fields.timestamp}</td>
+				<td className="col-xs-4 col-md-3"><Time val={this.props.row.fields.timestamp} /></td>
 				<td className="col-xs-6 col-md-7">{this.props.row.fields.message}</td>
 				<td className="col-xs-2 col-md-2"><button className="btn btn-primary btn-small pull-right" onClick={this.showDetails}>Details</button>
 					<div className="modal" role="dialog" ref="modal">
@@ -72,15 +84,17 @@ var SearchResults = React.createClass({
 
 		return (
 			<div>
-				<div>
-					<label>From: {this.props.data.request.from}</label><br/>
-					<label>Size: {this.props.data.request.size}</label><br/>
-					<label>Total: {this.props.data.total_hits}</label>
+				<div className="row">
+					<div className="col-md-6">
+						<SearchForm onSearch={this.props.onSearch} />
+					</div>
+					<div className="col-md-6">
+						<ul className="pagination pull-right">
+							{pages}
+						</ul>
+					</div>
 				</div>
-				<ul className="pagination">
-					{pages}
-				</ul>
-				<table className="table table-striped table-condensed table-hover">
+				<table className="center table table-striped table-condensed table-hover">
 					<thead>
 						<tr>
 							<th className="col-xs-2">Timestamp</th>
@@ -170,23 +184,29 @@ var SearchApplication = React.createClass({
 	render: function() {
 		return (
 			<div>
-				<div className="row">
-					<div className="col-md-12">
-						<Header/>
-					</div>
+			<Header/>
+
+			<div id="wrapper">
+				<div className="sidebar" id="sidebar-wrapper">
+					<ul className="sidebar-nav">
+						<li>
+							<a href="#">Live</a>
+						</li>
+						<li>
+							<a href="#">Search</a>
+						</li>
+						<li>
+							<a href="#">Settings</a>
+						</li>
+					</ul>
 				</div>
 
-				<div className="row">
-					<div className="col-md-12">
-						<SearchForm onSearch={this.search} />
+				<div id="page-content-wrapper">
+					<div class="container-fluid">
+						<SearchResults page={this.state.page} data={this.state.data} setPage={this.setPage} onSearch={this.search} />
 					</div>
 				</div>
-
-				<div className="row">
-					<div className="col-md-12">
-						<SearchResults page={this.state.page} data={this.state.data} setPage={this.setPage} />
-					</div>
-				</div>
+			</div>
 			</div>
 		);
 	}
