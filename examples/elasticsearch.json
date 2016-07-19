@@ -1,0 +1,23 @@
+{
+	"input": {
+		"driver":"stdin"
+	},
+	"filters": [
+		{
+			"driver":"uuid",
+			"config": {
+				"field": "messageID"
+			}
+		}
+	],
+	"output": {
+		"driver":"elasticsearch-http",
+		"config": {
+			"url": "http://localhost:9200/",
+			"index": "quicklog",
+			"type": "entry"
+		}
+	}
+}
+
+

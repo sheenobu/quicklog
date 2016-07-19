@@ -40,7 +40,7 @@ proof-of-concept search client for the bleve output
 
 Main engine
 
-## inputs 
+## inputs
 
  * stdin - Read from standard input
  * tcp - Read from TCP input
@@ -67,8 +67,9 @@ Main engine
  * debug - Writes the 'message' field to standard out, plus each additional field on the log entry
  * bleve - Writes all the field data to a bleve index. (experimental)
  * nats - Writes the entire log entry entry to a nats queue
+ * elasticsearch-http - Writes the entire JSON to elasticsearch, under the given index/type
 
-### config 
+### config
 
 JSON or etcd based configuration
 
