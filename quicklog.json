@@ -8,7 +8,7 @@
 		}
 	],
 	"output": {
-		"driver":"bleve"
+		"driver":"stdout"
 	}
 }
 

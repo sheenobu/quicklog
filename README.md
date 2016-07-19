@@ -30,10 +30,6 @@ runs the log input, filter, and output. Can be configured via configfile or etcd
 
 Loads a JSON quicklog config file into etcd under a specific instance name
 
-### qlsearch
-
-proof-of-concept search client for the bleve output
-
 ## components
 
 ### ql
@@ -65,7 +61,6 @@ Main engine
 
  * stdout - Writes the 'message' field to standard out
  * debug - Writes the 'message' field to standard out, plus each additional field on the log entry
- * bleve - Writes all the field data to a bleve index. (experimental)
  * nats - Writes the entire log entry entry to a nats queue
  * elasticsearch-http - Writes the entire JSON to elasticsearch, under the given index/type
 
