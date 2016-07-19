@@ -7,6 +7,7 @@ bin:
 build: bin
 	go build -o bin/quicklog ./cmd/quicklog
 	go build -o bin/ql2etcd ./cmd/ql2etcd
+	go build -o bin/ql-embedded-example ./examples/embedded
 
 linux: bin
 	GOOS=linux go build -o bin/quicklog-linux ./cmd/quicklog
