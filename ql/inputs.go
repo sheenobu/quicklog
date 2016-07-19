@@ -1,6 +1,8 @@
 package ql
 
 import (
+	"io"
+
 	"golang.org/x/net/context"
 )
 
@@ -10,25 +12,43 @@ type Buffer struct {
 	Metadata map[string]interface{}
 }
 
-// An InputHandler is a handler that waits for input and sends it to the line channel
-type InputHandler interface {
-	Handle(context.Context, chan<- Buffer, map[string]interface{}) error
+// An InputProcess is a process that waits for input and sends it to the line channel
+type InputProcess interface {
+	Start(context.Context, chan<- Buffer) error
+}
+
+// InputFactory is the factory for building input processes given the config options
+type InputFactory interface {
+	Build(jsonConfig io.Reader) (InputProcess, error)
+}
+
+// InputFactoryHandler converts the given function to an InputFactory
+func InputFactoryHandler(fn func(io.Reader) (InputProcess, error)) InputFactory {
+	return &factfn{fn}
+}
+
+type factfn struct {
+	fn func(io.Reader) (InputProcess, error)
+}
+
+func (f *factfn) Build(jsonConfig io.Reader) (InputProcess, error) {
+	return f.fn(jsonConfig)
 }
 
 var (
-	inputs map[string]InputHandler
+	inputs map[string]InputFactory
 )
 
 func init() {
-	inputs = make(map[string]InputHandler)
+	inputs = make(map[string]InputFactory)
 }
 
 // GetInput gets the input driver
-func GetInput(driver string) InputHandler {
+func GetInput(driver string) InputFactory {
 	return inputs[driver]
 }
 
 // RegisterInput registers the input handler using the driver name
-func RegisterInput(driver string, handler InputHandler) {
-	inputs[driver] = handler
+func RegisterInput(driver string, factory InputFactory) {
+	inputs[driver] = factory
 }

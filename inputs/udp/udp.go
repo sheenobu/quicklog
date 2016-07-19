@@ -1,6 +1,10 @@
 package udp
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
+
 	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
@@ -9,19 +13,36 @@ import (
 )
 
 func init() {
-	ql.RegisterInput("udp", &udpInput{})
+	ql.RegisterInput("udp", ql.InputFactoryHandler(func(r io.Reader) (ql.InputProcess, error) {
+		var config Config
+		if err := json.NewDecoder(r).Decode(&config); err != nil {
+			return nil, err
+		}
+		return &Process{Config: config}, nil
+	}))
 }
 
-type udpInput struct {
+// Config defines the available configuration options for the udp input
+type Config struct {
+	Listen string `json:"listen"`
 }
 
-func (udp *udpInput) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
+// Process is the process for the udp input handler
+type Process struct {
+	Config Config
+}
 
-	listen := config["listen"].(string)
-	log.Log(ctx).Debug("Starting input handler", "handler", "udp", "listen", listen)
+// Start starts the UDP handler proces
+func (p *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
+
+	if p.Config.Listen == "" {
+		return errors.New("No UDP listen configuration provided")
+	}
+
+	log.Log(ctx).Debug("Starting input handler", "handler", "udp", "listen", p.Config.Listen)
 
 	ch := make(chan ql.Buffer)
-	listenAddr, err := net.ResolveUDPAddr("udp", listen)
+	listenAddr, err := net.ResolveUDPAddr("udp", p.Config.Listen)
 	if err != nil {
 		return err
 	}

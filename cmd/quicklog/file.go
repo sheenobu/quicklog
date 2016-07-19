@@ -24,7 +24,7 @@ func startFileQuicklog(ctx context.Context, system *managed.System) {
 	}
 
 	// setup chain
-	chain := fromConfig(cfg)
+	chain := fromConfig(ctx, cfg)
 
 	// execute chain
 	system.Add(managed.Simple("chain", chain.Execute))

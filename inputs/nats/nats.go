@@ -1,6 +1,9 @@
 package nats
 
 import (
+	"encoding/json"
+	"io"
+
 	"github.com/nats-io/nats"
 
 	"github.com/sheenobu/quicklog/log"
@@ -11,57 +14,66 @@ import (
 	"fmt"
 )
 
-// read each line from a nats queue
-
 func init() {
-	ql.RegisterInput("nats", &natsIn{})
+	ql.RegisterInput("nats", ql.InputFactoryHandler(func(r io.Reader) (ql.InputProcess, error) {
+		var config Config
+		if err := json.NewDecoder(r).Decode(&config); err != nil {
+			return nil, err
+		}
+		return &Process{Config: config}, nil
+	}))
 }
 
-type natsIn struct{}
+// Config defines the available configuration options for the nats input
+type Config struct {
+	URL      string   `json:"url"`
+	Servers  []string `json:"servers"`
+	Publish  string   `json:"subscribe"`
+	Encoding string   `json:"encoding"`
+}
 
-func (in *natsIn) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
+// Process defines the nats input object
+type Process struct {
+	Config Config
+}
+
+// Start reads from the nats queue and pushes onto the given next channel
+func (i *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
 
 	log.Log(ctx).Debug("Starting input handler", "handler", "nats")
 
-	url, ok := config["url"].(string)
-	if !ok || url == "" {
+	if i.Config.URL == "" {
 		log.Log(ctx).Error("Could not create nats input, no url defined")
 		return fmt.Errorf("Could not create nats input, no url defined")
 	}
 
 	opts := nats.DefaultOptions
-	opts.Url = url
+	opts.Url = i.Config.URL
+	opts.Servers = i.Config.Servers
 
-	servers, ok := config["servers"].([]string)
-	if ok {
-		opts.Servers = servers
-	}
-
-	publish, ok := config["subscribe"].(string)
-	if !ok || publish == "" {
+	if i.Config.Publish == "" {
 		log.Log(ctx).Error("Could not create nats input, no publish defined")
 		return fmt.Errorf("Could not create nats input, no publish defined")
 	}
 
-	encoding, ok := config["encoding"].(string)
-	if !ok || encoding == "" {
-		encoding = nats.JSON_ENCODER
+	if i.Config.Encoding == "" {
+		i.Config.Encoding = nats.JSON_ENCODER
 	}
 
 	nc, err := opts.Connect()
 	if err != nil {
-		log.Log(ctx).Error("Error connecting to nats url", "url", url, "error", err)
+		log.Log(ctx).Error("Error connecting to nats url", "url", i.Config.URL, "error", err)
 		return err
 	}
 
-	c, err := nats.NewEncodedConn(nc, encoding)
+	c, err := nats.NewEncodedConn(nc, i.Config.Encoding)
 	if err != nil {
 		log.Log(ctx).Error("Error creating nats connection", "error", err)
 		return err
 	}
 
 	recvCh := make(chan ql.Line)
-	sub, err := c.BindRecvChan(publish, recvCh)
+	sub, err := c.BindRecvChan(i.Config.Publish, recvCh)
 	if err != nil {
 		log.Log(ctx).Error("Error listening on nats receive channel", "error", err)
 		return err
