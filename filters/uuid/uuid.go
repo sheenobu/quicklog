@@ -1,7 +1,7 @@
 package uuid
 
 import (
-	"code.google.com/p/go-uuid/uuid"
+	"github.com/satori/go.uuid"
 	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
@@ -34,7 +34,7 @@ func (u *uuidHandler) Handle(ctx context.Context, prev <-chan ql.Line, next chan
 		for {
 			select {
 			case line := <-prev:
-				line.Data[field] = uuid.New()
+				line.Data[field] = uuid.NewV4().String()
 				next <- line
 			case <-ctx.Done():
 				return
