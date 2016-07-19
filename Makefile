@@ -1,19 +1,24 @@
 
-build:
-	go build ./cmd/quicklog
-	go build ./cmd/qlsearch
-	go build ./cmd/ql2etcd
+all: build
 
-linux:
-	GOOS=linux go build -o quicklog-linux ./cmd/quicklog
-	GOOS=linux go build -o qlsearch-linux ./cmd/qlsearch
-	GOOS=linux go build -o ql2etcd-linux ./cmd/ql2etcd
+bin:
+	mkdir -p bin
+
+build: bin
+	go build -o bin/quicklog ./cmd/quicklog
+	go build -o bin/qlsearch ./cmd/qlsearch
+	go build -o bin/ql2etcd ./cmd/ql2etcd
+
+linux: bin
+	GOOS=linux go build -o bin/quicklog-linux ./cmd/quicklog
+	GOOS=linux go build -o bin/qlsearch-linux ./cmd/qlsearch
+	GOOS=linux go build -o bin/ql2etcd-linux ./cmd/ql2etcd
 
 docker: linux
 	docker build -t sheenobu/quicklog .
 
 clean:
-	rm -f ./quicklog ./quicklog-linux ./qlsearch ./qlsearch-linux ./ql2etcd ./ql2etcd-linux
+	rm -f ./bin/
 
 test:
 	go test ./...

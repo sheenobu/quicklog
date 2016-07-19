@@ -1,8 +1,3 @@
-/quicklog
-/qlsearch
-/ql2etcd
-/quicklog-linux
-/qlsearch-linux
-/ql2etcd-linux
 *.bleve
 *.etcd
+bin
