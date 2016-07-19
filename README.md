@@ -8,7 +8,11 @@ Example configurations are in examples/
 
 ## Installing everything:
 
-go install github.com/sheenobu/quicklog/cmd/...
+	$ go install github.com/sheenobu/quicklog/cmd/...
+
+## Embedding
+
+You can embed quicklog, and only include the parts you need. See /examples/embedded/main.go
 
 ## Running
 
