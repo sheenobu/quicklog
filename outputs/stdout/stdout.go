@@ -26,7 +26,7 @@ func (stdout *stdoutHandler) Handle(ctx context.Context, prev <-chan ql.Line, co
 		for {
 			select {
 			case line := <-prev:
-				if err := os.Stdout.Write([]byte(fmt.Sprintf("%s\n", line.Data["message"]))); err != nil {
+				if _, err := os.Stdout.Write([]byte(fmt.Sprintf("%s\n", line.Data["message"]))); err != nil {
 					l.Error("Error writing to standard out", "error", err)
 				}
 			case <-ctx.Done():
