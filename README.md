@@ -12,7 +12,7 @@ Example configurations are in examples/
 
 ## Embedding
 
-You can embed quicklog, and only include the parts you need. See /examples/embedded/main.go
+You can embed quicklog, and only include the parts you need. See [/examples/embedded/main.go](/examples/embedded/main.go)
 
 ## Running
 
