@@ -69,6 +69,16 @@ func (ch *Chain) Execute(ctx context.Context) {
 	bufferChan := make(chan Buffer)
 	inputChan := make(chan Line)
 
+	if ch.InputConfig == nil {
+		ch.InputConfig = make(map[string]interface{})
+	}
+	if ch.OutputConfig == nil {
+		ch.OutputConfig = make(map[string]interface{})
+	}
+	if ch.FilterConfig == nil {
+		ch.FilterConfig = make(map[string]interface{})
+	}
+
 	if err := inputHandler.Handle(ctx, bufferChan, ch.InputConfig); err != nil {
 		log.Log(ctx).Crit("Error creating input handler", "error", err)
 		return
