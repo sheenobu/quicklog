@@ -295,6 +295,32 @@ configuration options.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;udp.source - The connection remote address that is added to all incoming messages&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;h2 id=&#34;syslog&#34;&gt;Syslog&lt;/h2&gt;
+
+&lt;p&gt;Syslog is a UDP based input component for reading in syslog messages.&lt;/p&gt;
+
+&lt;p&gt;The &amp;lsquo;message&amp;rsquo; field is everything after the syslog message header.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-3&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required:
+
+&lt;ul&gt;
+&lt;li&gt;listen - The IP address port pair (ex: 127.0.0.1:5555, :5555)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;extra-fields-2&#34;&gt;Extra Fields&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;udp.source - The connection remote address that is added to all incoming messages&lt;/li&gt;
+&lt;li&gt;syslog.tag - The tag in the syslog header&lt;/li&gt;
+&lt;li&gt;syslog.hostname - the hostname in the syslog header&lt;/li&gt;
+&lt;li&gt;syslog.timestamp - the timestamp in the syslog header&lt;/li&gt;
+&lt;li&gt;syslog.pri - the PRI values (unparsed) in the syslog header&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
