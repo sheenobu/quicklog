@@ -1,11 +1,12 @@
 language: go
-script:
- - "make VERSION=$TRAVIS_TAG"
-
+go_import_path: github.com/sheenobu/quicklog
+sudo: false
 branches:
   only:
   - master
-
+env:
+  global:
+   - GO15VENDOREXPERIMENT=1
 go:
   - 1.5
   - 1.6
