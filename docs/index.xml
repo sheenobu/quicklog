@@ -10,10 +10,10 @@
     
     <item>
       <title>Quicklog</title>
-      <link>https://sheenobu.github.io/quicklog/index.html</link>
+      <link>https://sheenobu.github.io/quicklog/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/index.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/</guid>
       <description>
 
 &lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
@@ -49,10 +49,10 @@ has a set of configuration parameters.&lt;/p&gt;
     
     <item>
       <title>Documentation</title>
-      <link>https://sheenobu.github.io/quicklog/documentation.html</link>
+      <link>https://sheenobu.github.io/quicklog/documentation/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/documentation.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/documentation/</guid>
       <description>&lt;h2 id=&#34;installation&#34;&gt;Installation&lt;/h2&gt;
 
 &lt;h3 id=&#34;installing-quicklog&#34;&gt;Installing quicklog&lt;/h3&gt;
@@ -222,10 +222,10 @@ func main() {
     
     <item>
       <title>Input Components</title>
-      <link>https://sheenobu.github.io/quicklog/input-components.html</link>
+      <link>https://sheenobu.github.io/quicklog/input-components/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/input-components.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/input-components/</guid>
       <description>
 
 &lt;p&gt;Input components provide different methods for obtaining incoming log data.&lt;/p&gt;
@@ -300,10 +300,10 @@ configuration options.&lt;/p&gt;
     
     <item>
       <title>Parsers</title>
-      <link>https://sheenobu.github.io/quicklog/parsers.html</link>
+      <link>https://sheenobu.github.io/quicklog/parsers/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/parsers.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/parsers/</guid>
       <description>
 
 &lt;p&gt;Parsers work alongside the Input Components to determine how to parse the incoming message.&lt;/p&gt;
@@ -354,10 +354,10 @@ the &amp;lsquo;meta&amp;rsquo; field.&lt;/p&gt;
     
     <item>
       <title>Filters</title>
-      <link>https://sheenobu.github.io/quicklog/filters.html</link>
+      <link>https://sheenobu.github.io/quicklog/filters/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/filters.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/filters/</guid>
       <description>
 
 &lt;p&gt;Filters are components which modify the message data.&lt;/p&gt;
@@ -420,10 +420,10 @@ the &amp;lsquo;meta&amp;rsquo; field.&lt;/p&gt;
     
     <item>
       <title>Output Components</title>
-      <link>https://sheenobu.github.io/quicklog/output-components.html</link>
+      <link>https://sheenobu.github.io/quicklog/output-components/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://sheenobu.github.io/quicklog/output-components.html</guid>
+      <guid>https://sheenobu.github.io/quicklog/output-components/</guid>
       <description>
 
 &lt;p&gt;Output Components provide methods for writing the processed log data somewhere
