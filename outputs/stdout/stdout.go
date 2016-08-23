@@ -1,41 +1,17 @@
 package stdout
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/sheenobu/quicklog/log"
+	"github.com/sheenobu/quicklog/outputs/writer"
 	"github.com/sheenobu/quicklog/ql"
-	"golang.org/x/net/context"
 )
 
 func init() {
-	ql.RegisterOutput("stdout", &Process{})
+	ql.RegisterOutput("stdout", Process())
 }
 
-// Process is the standard output process
-type Process struct {
-}
-
-// Handle is the quicklog output handler
-func (stdout *Process) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
-
-	l := log.Log(ctx).New("handler", "stdout")
-
-	l.Debug("Starting output handler", "handler", "stdout")
-
-	go func() {
-		for {
-			select {
-			case line := <-prev:
-				if _, err := os.Stdout.Write([]byte(fmt.Sprintf("%s\n", line.Data["message"]))); err != nil {
-					l.Error("Error writing to standard out", "error", err)
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-
-	return nil
+// Process builds the standard output process
+func Process() ql.OutputHandler {
+	return &writer.Process{W: os.Stdout, Name: "stdout"}
 }
