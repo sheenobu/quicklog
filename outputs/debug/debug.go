@@ -10,15 +10,27 @@ import (
 )
 
 func init() {
-	ql.RegisterOutput("debug", &debugHandler{})
+	ql.RegisterOutput("debug", &Handler{})
 }
 
-type debugHandler struct {
+// A NullableBool is a boolean that can be nullable
+type NullableBool struct {
+	NotNull bool
+	Value   bool
 }
 
-func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
+// Handler is the handler for writing debug messages
+type Handler struct {
+	PrintFields NullableBool
+}
+
+// Handle is the quicklog handle method
+func (d *Handler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
 
 	printFields := true
+	if d.PrintFields.NotNull {
+		printFields = d.PrintFields.Value
+	}
 
 	pfInput := config["print-fields"]
 	if pfInput != nil {
@@ -49,6 +61,7 @@ func (d *debugHandler) Handle(ctx context.Context, prev <-chan ql.Line, config m
 					continue
 				}
 
+				os.Stdout.Write([]byte("Fields:\n"))
 				for key, val := range line.Data {
 					if key != "message" {
 						os.Stdout.Write([]byte(fmt.Sprintf("\t%s=%s\n", key, val)))
