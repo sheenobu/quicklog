@@ -55,7 +55,7 @@ func (d *Handler) Handle(ctx context.Context, prev <-chan ql.Line, config map[st
 					line.Data["message"] = ""
 				}
 
-				os.Stdout.Write([]byte("Message: " + line.Data["message"].(string) + "\n"))
+				os.Stdout.Write([]byte("Message: '" + line.Data["message"].(string) + "'\n"))
 
 				if !printFields {
 					continue
@@ -64,7 +64,7 @@ func (d *Handler) Handle(ctx context.Context, prev <-chan ql.Line, config map[st
 				os.Stdout.Write([]byte("Fields:\n"))
 				for key, val := range line.Data {
 					if key != "message" {
-						os.Stdout.Write([]byte(fmt.Sprintf("\t%s=%s\n", key, val)))
+						os.Stdout.Write([]byte(fmt.Sprintf("\t%s: '%s'\n", key, val)))
 					}
 				}
 
