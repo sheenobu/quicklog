@@ -10,13 +10,15 @@ import (
 )
 
 func init() {
-	ql.RegisterOutput("stdout", &stdoutHandler{})
+	ql.RegisterOutput("stdout", &Process{})
 }
 
-type stdoutHandler struct {
+// Process is the standard output process
+type Process struct {
 }
 
-func (stdout *stdoutHandler) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
+// Handle is the quicklog output handler
+func (stdout *Process) Handle(ctx context.Context, prev <-chan ql.Line, config map[string]interface{}) error {
 
 	l := log.Log(ctx).New("handler", "stdout")
 
