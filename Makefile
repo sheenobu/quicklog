@@ -13,33 +13,49 @@ ENV := $(shell printenv)
 
 GOFLAGS = -ldflags '-X=main.version=$(VSN)'
 
-all: build
 
-bin:
-	mkdir -p bin
+default: all
 
-build: bin
-	go build $(GOFLAGS) -o bin/quicklog ./cmd/quicklog
-	go build $(GOFLAGS) -o bin/ql2etcd ./cmd/ql2etcd
-	go build $(GOFLAGS) -o bin/ql-embedded-example ./examples/embedded
+all: test install
 
-linux: bin
-	CGO_ENABLED=0 GOOS=linux go build $(GOFLAGS) -ldflags "-s" -a -installsuffix cgo -o bin/quicklog-linux ./cmd/quicklog
-
-docker: linux
-	docker build -t sheenobu/quicklog .
-
-clean:
-	rm -f ./bin/
+install: get-deps
+	@go build $(GOFLAGS) ./cmd/quicklog/
 
 test:
-	go test ./...
+	@go test $(GOFLAGS) ./...
 
-fmt:
-	go fmt ./...
+get-deps:
+	@go get ./...
 
-vet:
-	go vet ./...
+clean:
+	@go clean $(GOFLAGS) -i ./
 
-lint:
-	golint ./...
+#all: build
+
+#bin:
+#	mkdir -p bin
+
+#build: bin
+#	go build $(GOFLAGS) -o bin/quicklog ./cmd/quicklog
+#	go build $(GOFLAGS) -o bin/ql2etcd ./cmd/ql2etcd
+
+#linux: bin
+#	CGO_ENABLED=0 GOOS=linux go build $(GOFLAGS) -ldflags "-s" -a -installsuffix cgo -o bin/quicklog-linux ./cmd/quicklog
+
+#docker: linux
+#	docker build -t sheenobu/quicklog .
+
+#clean:
+#	rm -f ./bin/
+
+#test:
+#	go test ./...
+
+#fmt:
+#	go fmt ./...
+
+#vet:
+#	go vet ./...
+
+#lint:
+#	golint ./...
