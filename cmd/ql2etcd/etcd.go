@@ -53,6 +53,12 @@ func syncToEtcd(ctx context.Context, cfg *config.Config) error {
 	kapi.Set(ctx, root+"/output/driver", output.Driver, nil)
 	kapi.Set(ctx, root+"/output/config", string(outputConfig), nil)
 
+	// clear all the filters before re-creating them
+	kapi.Delete(ctx, root+"/filters", &client.DeleteOptions{Recursive: true, Dir: true})
+
+	// filters must exist even if empty
+	kapi.Set(ctx, root+"/filters", "", &client.SetOptions{Dir: true})
+
 	for idx, filter := range filters {
 		filterConfig, err := json.Marshal(filter.Config)
 		if err != nil {
