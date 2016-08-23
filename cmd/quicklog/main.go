@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
 	_ "github.com/sheenobu/quicklog/filters"
 	_ "github.com/sheenobu/quicklog/inputs"
@@ -21,11 +22,17 @@ import (
 	"os"
 )
 
+var version = "unknown"
+
 var configFile string
 var etcdEndpoints string
 var instanceName string
 
+var verFlag bool
+
 func init() {
+
+	flag.BoolVar(&verFlag, "version", false, "Returns the version number")
 
 	flag.StringVar(&configFile, "filename", "quicklog.json", "Filename for the configuration")
 
@@ -36,6 +43,11 @@ func init() {
 func main() {
 
 	flag.Parse()
+
+	if verFlag {
+		fmt.Printf("%s\n", version)
+		return
+	}
 
 	// Setup context
 	ctx := context.Background()
