@@ -26,7 +26,7 @@ func (ch *Chain) parserLoop(ctx context.Context, bufferChan <-chan Buffer, input
 	parser := ch.Parser
 
 	if parser == nil {
-		parser = GetParser("plain")
+		parser = &plainParser{}
 	}
 
 	for {
@@ -103,4 +103,15 @@ func (ch *Chain) Execute(ctx context.Context) {
 	}
 
 	<-ctx.Done()
+}
+
+// included as a fallback parser so that we don't have to import parsers/plain
+
+// plainParser treats every input buffer as a single line
+type plainParser struct{}
+
+// Parse adds the buffer to the Line data as the 'message' key
+func (pp *plainParser) Parse(buffer []byte, line *Line, _ map[string]interface{}) error {
+	line.Data["message"] = string(buffer)
+	return nil
 }
