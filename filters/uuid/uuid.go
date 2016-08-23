@@ -8,15 +8,22 @@ import (
 )
 
 func init() {
-	ql.RegisterFilter("uuid", &uuidHandler{})
+	ql.RegisterFilter("uuid", &Handler{})
 }
 
-type uuidHandler struct {
+// Handler is the UUID handler
+type Handler struct {
+	FieldName string
 }
 
-func (u *uuidHandler) Handle(ctx context.Context, prev <-chan ql.Line, next chan<- ql.Line, config map[string]interface{}) error {
+// Handle is the quicklog handle method for processing a log line
+func (u *Handler) Handle(ctx context.Context, prev <-chan ql.Line, next chan<- ql.Line, config map[string]interface{}) error {
 
 	field := "uuid"
+	if u.FieldName != "" {
+		field = u.FieldName
+	}
+
 	ok := true
 
 	fieldIface := config["field"]

@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "github.com/sheenobu/quicklog/filters/uuid"
-	_ "github.com/sheenobu/quicklog/inputs/stdin"
-	_ "github.com/sheenobu/quicklog/outputs/stdout"
-	_ "github.com/sheenobu/quicklog/parsers/plain"
+	"github.com/sheenobu/quicklog/filters/uuid"
+	"github.com/sheenobu/quicklog/inputs/stdin"
+	"github.com/sheenobu/quicklog/outputs/debug"
+	"github.com/sheenobu/quicklog/parsers/plain"
 
 	"golang.org/x/net/context"
 
@@ -14,10 +14,11 @@ import (
 func main() {
 
 	chain := ql.Chain{
-		Input:  ql.GetInput("stdin"),
-		Output: ql.GetOutput("stdout"),
-		Filter: ql.GetFilter("uuid"),
-		Parser: ql.GetParser("plain"),
+		Input: &stdin.Process{},
+		//Output: &stdout.Process{},
+		Output: &debug.Handler{PrintFields: debug.NullableBool{NotNull: false, Value: true}},
+		Filter: &uuid.Handler{FieldName: "uuid"},
+		Parser: &plain.Parser{},
 	}
 
 	ctx := context.Background()

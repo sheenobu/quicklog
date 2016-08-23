@@ -70,5 +70,5 @@ Main engine
 
 ### config
 
-JSON or etcd based configuration
+JSON or etcd based configuration, see /examples
 

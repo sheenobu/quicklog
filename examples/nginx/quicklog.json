@@ -1,0 +1,15 @@
+{
+	"input": {
+		"driver":"syslog",
+		"parser": "otto",
+		"config": {
+			"listen": ":5555",
+			"otto.script":"res=function(msg){l=msg.split(' ');ret=l[6];method=l[7].replace('\"','');url=l[8];s=msg.split('\"');userAgent=s[5];return{userAgent:userAgent,statusCode:ret,method:method,url:url,message:msg}};"
+		}
+	},
+	"output": {
+		"driver":"debug"
+	}
+}
+
+

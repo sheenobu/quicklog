@@ -1,19 +1,18 @@
-package udp
+package syslog
 
 import (
 	"encoding/json"
 	"errors"
 	"io"
+	"net"
 
 	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
 	"golang.org/x/net/context"
-
-	"net"
 )
 
 func init() {
-	ql.RegisterInput("udp", ql.InputFactoryHandler(func(r io.Reader) (ql.InputProcess, error) {
+	ql.RegisterInput("syslog", ql.InputFactoryHandler(func(r io.Reader) (ql.InputProcess, error) {
 		var config Config
 		if err := json.NewDecoder(r).Decode(&config); err != nil {
 			return nil, err
@@ -22,24 +21,26 @@ func init() {
 	}))
 }
 
-// Config defines the available configuration options for the udp input
+// Config defines the available configuration options for the syslog input
 type Config struct {
 	Listen string `json:"listen"`
 }
 
-// Process is the process for the udp input handler
+// Process is the syslog listener process
 type Process struct {
 	Config Config
 }
 
-// Start starts the UDP handler proces
+const timestamp = "Mmm dd hh:mm:ss"
+
+// Start starts the syslog handler proces
 func (p *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
 
 	if p.Config.Listen == "" {
-		return errors.New("No UDP listen configuration provided")
+		return errors.New("No syslog listen configuration provided")
 	}
 
-	log.Log(ctx).Debug("Starting input handler", "handler", "udp", "listen", p.Config.Listen)
+	log.Log(ctx).Debug("Starting input handler", "handler", "syslog", "listen", p.Config.Listen)
 
 	ch := make(chan ql.Buffer)
 	listenAddr, err := net.ResolveUDPAddr("udp", p.Config.Listen)
@@ -73,10 +74,47 @@ func (p *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
 				continue
 			}
 
+			priStart := 0
+			priEnd := 0
+
+			for _, i := range buffer {
+				priEnd++
+				if i == '>' {
+					break
+				}
+			}
+
+			hostStart := priEnd + len(timestamp) + 1
+			hostEnd := priEnd + len(timestamp) + 1
+
+			for _, i := range buffer[hostStart:] {
+				if i == ' ' {
+					break
+				}
+				hostEnd++
+
+			}
+
+			tagStart := hostEnd + 1
+			tagEnd := hostEnd + 1
+			for _, i := range buffer[tagStart:] {
+				if i == ':' || i == '[' || i == ' ' {
+					break
+				}
+				tagEnd++
+			}
+
 			m := make(map[string]interface{})
+			m["syslog.tag"] = string(buffer[tagStart:tagEnd])
+			m["syslog.hostname"] = string(buffer[hostStart:hostEnd])
+			m["syslog.timestamp"] = string(buffer[priEnd : priEnd+len(timestamp)])
+			m["syslog.pri"] = string(buffer[priStart+1 : priEnd-1])
 			m["udp.source"] = addr.String()
+
+			data := buffer[tagEnd+2 : size]
+
 			ch <- ql.Buffer{
-				Data:     buffer[:size],
+				Data:     data,
 				Metadata: m,
 			}
 		}

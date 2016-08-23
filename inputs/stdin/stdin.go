@@ -2,6 +2,7 @@ package stdin
 
 import (
 	"bufio"
+	"io"
 	"os"
 
 	"github.com/sheenobu/quicklog/log"
@@ -12,22 +13,38 @@ import (
 	"sync"
 )
 
+var fact *factory
+
 func init() {
-	ql.RegisterInput("stdin", &stdin{
+
+	fact = &factory{
 		ch: make(chan ql.Buffer),
-	})
+	}
+
+	ql.RegisterInput("stdin", fact)
 }
 
-type stdin struct {
+// factory is the factory for the standard input
+type factory struct {
 	once sync.Once
 	ch   chan ql.Buffer
 }
 
-func (s *stdin) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
+// Build builds the input processor
+func (f *factory) Build(_ io.Reader) (ql.InputProcess, error) {
+	return &Process{}, nil
+}
+
+// Process is the standard input process
+type Process struct {
+}
+
+// Start starts the standard input process
+func (p *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
 
 	log.Log(ctx).Debug("Starting input handler", "handler", "stdin")
 
-	s.once.Do(func() {
+	fact.once.Do(func() {
 		go func() {
 			bio := bufio.NewReader(os.Stdin)
 
@@ -36,7 +53,7 @@ func (s *stdin) Handle(ctx context.Context, next chan<- ql.Buffer, config map[st
 				if err != nil {
 					break
 				}
-				s.ch <- ql.Buffer{Data: line}
+				fact.ch <- ql.Buffer{Data: line}
 			}
 		}()
 	})
@@ -46,7 +63,7 @@ func (s *stdin) Handle(ctx context.Context, next chan<- ql.Buffer, config map[st
 			select {
 			case <-ctx.Done():
 				return
-			case str := <-s.ch:
+			case str := <-fact.ch:
 				next <- str
 			}
 		}

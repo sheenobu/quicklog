@@ -47,7 +47,7 @@ func startEtcdQuicklog(mainCtx context.Context, system *managed.System) {
 	}
 
 	// setup chain
-	chain := fromConfig(&cfg)
+	chain := fromConfig(mainCtx, &cfg)
 
 	chainApp.Add(managed.Simple("chain-sub-"+instanceName, chain.Execute))
 
@@ -100,7 +100,7 @@ func startEtcdQuicklog(mainCtx context.Context, system *managed.System) {
 					system.SpawnSystem(chainApp)
 
 					// setup chain
-					chain = fromConfig(&newCfg)
+					chain = fromConfig(ctx, &newCfg)
 
 					chainApp.Add(managed.Simple("chain-sub-"+instanceName, chain.Execute))
 				}

@@ -9,9 +9,10 @@ import (
 
 // A Chain is a series of handlers that process data
 type Chain struct {
-	Input       InputHandler
+	Input       InputProcess
 	InputConfig map[string]interface{}
-	Parser      Parser
+
+	Parser Parser
 
 	Filter       FilterHandler
 	FilterConfig map[string]interface{}
@@ -25,7 +26,7 @@ func (ch *Chain) parserLoop(ctx context.Context, bufferChan <-chan Buffer, input
 	parser := ch.Parser
 
 	if parser == nil {
-		parser = GetParser("plain")
+		parser = &plainParser{}
 	}
 
 	for {
@@ -61,7 +62,6 @@ func (ch *Chain) parserLoop(ctx context.Context, bufferChan <-chan Buffer, input
 // Execute executes the chain and waits for its completion
 func (ch *Chain) Execute(ctx context.Context) {
 
-	inputHandler := ch.Input
 	outputHandler := ch.Output
 
 	var chann chan Line
@@ -79,9 +79,8 @@ func (ch *Chain) Execute(ctx context.Context) {
 		ch.FilterConfig = make(map[string]interface{})
 	}
 
-	if err := inputHandler.Handle(ctx, bufferChan, ch.InputConfig); err != nil {
-		log.Log(ctx).Crit("Error creating input handler", "error", err)
-		return
+	if err := ch.Input.Start(ctx, bufferChan); err != nil {
+		log.Log(ctx).Crit("Error starting input handler", "error", err)
 	}
 
 	go ch.parserLoop(ctx, bufferChan, inputChan)
@@ -104,4 +103,15 @@ func (ch *Chain) Execute(ctx context.Context) {
 	}
 
 	<-ctx.Done()
+}
+
+// included as a fallback parser so that we don't have to import parsers/plain
+
+// plainParser treats every input buffer as a single line
+type plainParser struct{}
+
+// Parse adds the buffer to the Line data as the 'message' key
+func (pp *plainParser) Parse(buffer []byte, line *Line, _ map[string]interface{}) error {
+	line.Data["message"] = string(buffer)
+	return nil
 }

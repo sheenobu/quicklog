@@ -10,8 +10,7 @@ build: bin
 	go build -o bin/ql-embedded-example ./examples/embedded
 
 linux: bin
-	GOOS=linux go build -o bin/quicklog-linux ./cmd/quicklog
-	GOOS=linux go build -o bin/ql2etcd-linux ./cmd/ql2etcd
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o bin/quicklog-linux ./cmd/quicklog
 
 docker: linux
 	docker build -t sheenobu/quicklog .

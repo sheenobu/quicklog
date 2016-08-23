@@ -1,0 +1,2 @@
+ql: quicklog -filename ./quicklog.json
+nginx: nginx -c nginx.conf -p .

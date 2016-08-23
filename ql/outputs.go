@@ -26,3 +26,11 @@ func GetOutput(driver string) OutputHandler {
 func RegisterOutput(driver string, handler OutputHandler) {
 	outputs[driver] = handler
 }
+
+// OutputHandlerFunc is an adaptor for converting output handler functions to OutputHandler interfaces
+type OutputHandlerFunc func(context.Context, <-chan Line, map[string]interface{}) error
+
+// Handle is the function which implements the OutputHandler interface
+func (fn OutputHandlerFunc) Handle(ctx context.Context, ch <-chan Line, config map[string]interface{}) error {
+	return fn(ctx, ch, config)
+}

@@ -2,6 +2,9 @@ package tcp
 
 import (
 	"bufio"
+	"encoding/json"
+	"errors"
+	"io"
 
 	"github.com/sheenobu/quicklog/log"
 	"github.com/sheenobu/quicklog/ql"
@@ -11,23 +14,39 @@ import (
 )
 
 func init() {
-	ql.RegisterInput("tcp", &tcpInput{})
+	ql.RegisterInput("tcp", ql.InputFactoryHandler(func(r io.Reader) (ql.InputProcess, error) {
+		var config Config
+		if err := json.NewDecoder(r).Decode(&config); err != nil {
+			return nil, err
+		}
+		return &Process{Config: config}, nil
+	}))
 }
 
-type tcpInput struct {
+// Config defines the available configuration options for the tcp input
+type Config struct {
+	Listen string `json:"listen"`
 }
 
-func (tcp *tcpInput) Handle(ctx context.Context, next chan<- ql.Buffer, config map[string]interface{}) error {
+// Process defines the tcp process listener
+type Process struct {
+	Config Config
+}
 
-	listen := config["listen"].(string)
+// Start starts the tcp listener and waits for messages
+func (p *Process) Start(ctx context.Context, next chan<- ql.Buffer) error {
+
+	if p.Config.Listen == "" {
+		return errors.New("No TCP listen option provided")
+	}
+
+	log.Log(ctx).Debug("Starting input handler", "handler", "tcp", "listen", p.Config.Listen)
 
 	ch := make(chan ql.Buffer)
-	ln, err := net.Listen("tcp", listen)
+	ln, err := net.Listen("tcp", p.Config.Listen)
 	if err != nil {
 		return err
 	}
-
-	log.Log(ctx).Debug("Starting input handler", "handler", "tcp")
 
 	go func() {
 		for {

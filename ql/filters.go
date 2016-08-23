@@ -4,17 +4,25 @@ import (
 	"golang.org/x/net/context"
 )
 
-// A FilterHandler is a handler that processes, edits, and filters incoming data
-type FilterHandler interface {
-	Handle(context.Context, <-chan Line, chan<- Line, map[string]interface{}) error
-}
-
 var (
 	filters map[string]FilterHandler
 )
 
 func init() {
 	filters = make(map[string]FilterHandler)
+}
+
+// A FilterHandler is a handler that processes, edits, and filters incoming data
+type FilterHandler interface {
+	Handle(context.Context, <-chan Line, chan<- Line, map[string]interface{}) error
+}
+
+// FilterHandlerFunc is the adaptor for converting a function to a FilterHandler instance
+type FilterHandlerFunc func(context.Context, <-chan Line, chan<- Line, map[string]interface{}) error
+
+// Handle runs the filter by reading from in, processing the line, and writing it to out
+func (fh FilterHandlerFunc) Handle(ctx context.Context, in <-chan Line, out chan<- Line, cfg map[string]interface{}) error {
+	return fh(ctx, in, out, cfg)
 }
 
 // GetFilter returns the filter handler

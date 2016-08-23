@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+
 	_ "github.com/sheenobu/quicklog/filters"
 	_ "github.com/sheenobu/quicklog/inputs"
 	_ "github.com/sheenobu/quicklog/outputs"
@@ -56,14 +59,28 @@ func main() {
 	system.Wait()
 }
 
-func fromConfig(cfg *config.Config) *ql.Chain {
+func fromConfig(ctx context.Context, cfg *config.Config) *ql.Chain {
+
+	inputConfigBody, err := json.Marshal(&cfg.Input.Config)
+	if err != nil {
+		log.Log(ctx).Crit("Error converting input configuration to json", "error", err)
+		return nil
+	}
+	inputHandler, err := ql.GetInput(cfg.Input.Driver).Build(bytes.NewReader(inputConfigBody))
+	if err != nil {
+		log.Log(ctx).Crit("Error creating input handler", "error", err)
+		return nil
+	}
+
 	chain := ql.Chain{
-		Input:        ql.GetInput(cfg.Input.Driver),
+		Input: inputHandler,
+
 		InputConfig:  cfg.Input.Config,
 		Parser:       ql.GetParser(cfg.Input.Parser),
 		Output:       ql.GetOutput(cfg.Output.Driver),
 		OutputConfig: cfg.Output.Config,
 	}
+
 	if len(cfg.Filters) >= 1 {
 		chain.Filter = ql.GetFilter(cfg.Filters[0].Driver)
 		chain.FilterConfig = cfg.Filters[0].Config
