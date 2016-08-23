@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>quicklog</title>
+    <title>Documentation - quicklog</title>
     <meta name="generator" content="Hugo 0.15" />
 
     
     <meta name="description" content="A log aggregation, parsing, and searching system">
     
-    <link rel="canonical" href="https://sheenobu.github.io/quicklog/">
+    <link rel="canonical" href="https://sheenobu.github.io/quicklog/documentation.html">
     
     <meta name="author" content="sheenobu">
     
 
-    <meta property="og:url" content="https://sheenobu.github.io/quicklog/">
+    <meta property="og:url" content="https://sheenobu.github.io/quicklog/documentation.html">
     <meta property="og:title" content="quicklog">
     <meta property="og:image" content="https://sheenobu.github.io/quicklogimages/logo.png">
     <meta name="apple-mobile-web-app-title" content="quicklog">
@@ -71,9 +71,6 @@
     <script src="https://sheenobu.github.io/quicklogjavascripts/modernizr.js"></script>
 
     
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="alternate" type="application/rss+xml" title="quicklog" />
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="feed" type="application/rss+xml" title="quicklog" />
-    
 
   </head>
   <body class="palette-primary-indigo ">
@@ -102,7 +99,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        quicklog
+        Documentation
       </div>
     </div>
 
@@ -318,41 +315,173 @@
 
 	<article class="article">
 		<div class="wrapper">
-			
-				<h1>Quicklog </h1>
+			<h1>Documentation </h1>
 
-				
+			<h2 id="installation">Installation</h2>
 
-<h2 id="introduction">Introduction</h2>
+<h3 id="installing-quicklog">Installing quicklog</h3>
 
-<p><em>Quicklog</em> is a log aggregation, parser, and searcher written in Golang. It can be
-run <a href="#quick-start">standalone</a> or by <a href="documentation/#embedding">embedding</a> into your own
-programs.</p>
-
-<p>Quicklog is key-value based. The messages processed by quicklog are represented as key-value pairs. By default,
-incoming message bodies are stored in the &lsquo;message&rsquo; field but that is not required.</p>
-
-<h2 id="quick-start">Quick start</h2>
+<p>Installing quicklog can be done by downloading the latest binary <a href="#">here</a> or performing &lsquo;go install&rsquo;:</p>
 
 <pre><code>$ go install github.com/sheenobu/quicklog/cmd/quicklog
-$ cat &lt;&lt;EOF &gt; quicklog.json
-{&quot;input&quot;: {&quot;driver&quot;:&quot;stdin&quot;}, &quot;filters&quot;: [{&quot;driver&quot;:&quot;uppercase&quot;}], &quot;output&quot;: {&quot;driver&quot;:&quot;stdout&quot;}}
-EOF
-$ quicklog
-lvl=info msg=&quot;Starting quicklog&quot;
-lvl=info msg=&quot;Loading config from file&quot; file=quicklog.json
-hello
-HELLO
 </code></pre>
 
-<h2 id="components">Components</h2>
+<h2 id="configuration">Configuration</h2>
 
-<p>Quicklog is a chain-based system, where data flows from an input, to a parser, to a collection of filters, then finally to an output. Each component in the chain
-has a set of configuration parameters.</p>
+<p>quicklog provides two separate means of configuration: Loading from a file or loading from an etcd cluster.</p>
 
-<p>Additional features can be added via a <a href="https://github.com/sheenobu/quicklog">Pull Request</a> or by <a href="documentation/#embedding">Embedding</a>.</p>
+<h3 id="file">File based configuration</h3>
 
-			
+<p>File based configuration is based on JSON. The chain is described within the JSON
+alongside the configuration for each component.</p>
+
+<p>Running with a file based configuration:</p>
+
+<pre><code>$ quicklog -filename quicklog.json
+</code></pre>
+
+<p>quicklog.json:</p>
+
+<pre><code>{
+    &quot;input&quot;: {
+        &quot;driver&quot;:&quot;stdin&quot;
+    },
+    &quot;filters&quot;: [
+        {
+            &quot;driver&quot;:&quot;uppercase&quot;
+        }
+    ],
+    &quot;output&quot;: {
+        &quot;driver&quot;:&quot;stdout&quot;
+    }
+}
+</code></pre>
+
+<p>Filters is <strong>optional</strong>, however both <strong>input</strong> and <strong>output</strong> are required.</p>
+
+<p>Required and optional configuration is provided via the &lsquo;config&rsquo; field:</p>
+
+<pre><code>{
+    &quot;input&quot;: {
+        &quot;driver&quot;:&quot;nats&quot;,
+        &quot;config&quot;: {
+            &quot;url&quot;: &quot;nats://127.0.0.1:4222&quot;,
+            &quot;subscribe&quot;: &quot;logging:queue&quot;
+        }
+}
+</code></pre>
+
+<p>Parsers are provided via the &lsquo;parser&rsquo; field on &lsquo;input&rsquo;:</p>
+
+<pre><code>{
+    &quot;input&quot;: {
+        &quot;driver&quot;:&quot;stdin&quot;,
+        &quot;parser&quot;: &quot;otto&quot;,
+        &quot;config&quot;: {
+            &quot;otto.script&quot;: &quot;res=function(e){return l=e.split(\&quot; \&quot;),{message:l[0],meta:l[1]}};&quot;
+        }
+    }
+}
+</code></pre>
+
+<h3 id="etcd">etcd Based Configuration</h3>
+
+<p>The etcd based configuration works nearly identifical to the JSON configuration. However, instead of a JSON
+file, each entry is stored in etcd as keys. The best way to explore this is by downloading ql2etcd,
+then loading a JSON based configuration into etcd:</p>
+
+<pre><code>$ go install github.com/sheenobu/quicklog/cmd/ql2etcd
+$ ql2etcd -input quicklog.json -instanceName instanceName -etcdEndpoints http://localhost:4001
+
+$ etcdctl ls --recursive
+/quicklog
+/quicklog/instanceName
+/quicklog/instanceName/filters
+/quicklog/instanceName/filters/0
+/quicklog/instanceName/filters/0/driver
+/quicklog/instanceName/filters/0/config
+/quicklog/instanceName/reload
+/quicklog/instanceName/input
+/quicklog/instanceName/input/driver
+/quicklog/instanceName/input/parser
+/quicklog/instanceName/input/config
+/quicklog/instanceName/output
+/quicklog/instanceName/output/config
+/quicklog/instanceName/output/driver
+</code></pre>
+
+<p>Each driver, parser entry is a string type. However, the &lsquo;config&rsquo; fields are JSON types:</p>
+
+<pre><code>$ etcdctl get /quicklog/instanceName/input/config
+{&quot;otto.script&quot;:&quot;res=function(e){return l=e.split(\&quot; \&quot;),{message:l[0],meta:l[1]}};&quot;}
+</code></pre>
+
+<p>Running this etcd config with quicklog:</p>
+
+<pre><code>$  quicklog -instanceName instanceName -etcdEndpoints http://localhost:4001
+</code></pre>
+
+<p>Programmative reloading of the etcd configuration on a running quicklog instance can be
+done via setting the <code>/quicklog/instanceName/reload</code> field after updating the required entries.</p>
+
+<h2 id="clustering">Clustering</h2>
+
+<p>There has been little upfront through to clustering in quicklog. However, deploying multiple instances of quicklog can be
+done in many ways:</p>
+
+<ul>
+<li>Have each quicklog instance pull from a Nats queue, each instance getting a subset of messages which can be later merged together (via elasticsearch, bleve, etc).</li>
+<li>The input of one quicklog instance can be the output of another quicklog, creating a tree of quicklog instances.</li>
+<li>Quicklog can be embedded, made to be specialized as a specific component within a larger log aggregation architecture.</li>
+</ul>
+
+<h2 id="embedding">Embedding</h2>
+
+<p>The primary package of quicklog is <code>github.com/sheenobu/quicklog/ql</code>. This package is the primary implementation of the
+component system and quicklog chain. Embedding requires creating a chain, adding each required configuration option, and running the chain:</p>
+
+<pre><code>import (
+    &quot;github.com/sheenobu/quicklog/filters/uuid&quot;
+    &quot;github.com/sheenobu/quicklog/inputs/stdin&quot;
+    &quot;github.com/sheenobu/quicklog/outputs/debug&quot;
+    &quot;github.com/sheenobu/quicklog/parsers/plain&quot;
+
+    &quot;golang.org/x/net/context&quot;
+
+    &quot;github.com/sheenobu/quicklog/ql&quot;
+)
+
+func main() {
+    chain := ql.Chain{
+        Input: &amp;stdin.Process{},
+        Output: &amp;debug.Handler{PrintFields: debug.NullableBool{NotNull: false, Value: true}},
+        Filter: &amp;uuid.Handler{FieldName: &quot;uuid&quot;},
+    }
+
+    ctx := context.Background()
+    chain.Execute(ctx)
+}
+</code></pre>
+
+<p>This example defines our chain by importing a bunch of pre-build components. We can also provide custom components:</p>
+
+<pre><code>chain.Input = ql.InputProcessFunc(func(ctx context.Context, input chan&lt;- ql.Buffer) error {
+    go func() {
+            for {
+                    select {
+                    case t := &lt;-time.After(5 * time.Second):
+                            input &lt;- ql.Buffer{Data: []byte(&quot;hello + &quot; + t.String())}
+                    case &lt;-ctx.Done():
+                            return
+                    }
+            }
+    }()
+
+    return nil
+</code></pre>
+
+<p>})</p>
+
 
 			<aside class="copyright" role="note">
 				
@@ -367,23 +496,37 @@ has a set of configuration parameters.</p>
 			<footer class="footer">
 				
 
-
-
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
+  
+      <a href="https://sheenobu.github.io/quicklog/index.html" title="Quicklog">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              Quicklog
+            </div>
+          </div>
+        </div>
+      </a>
+  
   </div>
 
-  
-  
   <div class="next">
-      <a href="https://sheenobu.github.io/quicklog/documentation.html" title="Documentation">
+  
+      <a href="https://sheenobu.github.io/quicklog/input-components.html" title="Input Components">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              Documentation
+              Input Components
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
@@ -391,8 +534,11 @@ has a set of configuration parameters.</p>
           </div>
         </div>
       </a>
+  
   </div>
 </nav>
+
+
 
 
 

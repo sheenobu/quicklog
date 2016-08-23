@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>quicklog</title>
+    <link>https://sheenobu.github.io/quicklog/</link>
+    <description>Recent content on quicklog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <atom:link href="https://sheenobu.github.io/quicklog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Quicklog</title>
+      <link>https://sheenobu.github.io/quicklog/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/index.html</guid>
+      <description>
+
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;Quicklog&lt;/em&gt; is a log aggregation, parser, and searcher written in Golang. It can be
+run &lt;a href=&#34;#quick-start&#34;&gt;standalone&lt;/a&gt; or by &lt;a href=&#34;documentation/#embedding&#34;&gt;embedding&lt;/a&gt; into your own
+programs.&lt;/p&gt;
+
+&lt;p&gt;Quicklog is key-value based. The messages processed by quicklog are represented as key-value pairs. By default,
+incoming message bodies are stored in the &amp;lsquo;message&amp;rsquo; field but that is not required.&lt;/p&gt;
+
+&lt;h2 id=&#34;quick-start&#34;&gt;Quick start&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go install github.com/sheenobu/quicklog/cmd/quicklog
+$ cat &amp;lt;&amp;lt;EOF &amp;gt; quicklog.json
+{&amp;quot;input&amp;quot;: {&amp;quot;driver&amp;quot;:&amp;quot;stdin&amp;quot;}, &amp;quot;filters&amp;quot;: [{&amp;quot;driver&amp;quot;:&amp;quot;uppercase&amp;quot;}], &amp;quot;output&amp;quot;: {&amp;quot;driver&amp;quot;:&amp;quot;stdout&amp;quot;}}
+EOF
+$ quicklog
+lvl=info msg=&amp;quot;Starting quicklog&amp;quot;
+lvl=info msg=&amp;quot;Loading config from file&amp;quot; file=quicklog.json
+hello
+HELLO
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;components&#34;&gt;Components&lt;/h2&gt;
+
+&lt;p&gt;Quicklog is a chain-based system, where data flows from an input, to a parser, to a collection of filters, then finally to an output. Each component in the chain
+has a set of configuration parameters.&lt;/p&gt;
+
+&lt;p&gt;Additional features can be added via a &lt;a href=&#34;https://github.com/sheenobu/quicklog&#34;&gt;Pull Request&lt;/a&gt; or by &lt;a href=&#34;documentation/#embedding&#34;&gt;Embedding&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Documentation</title>
+      <link>https://sheenobu.github.io/quicklog/documentation.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/documentation.html</guid>
+      <description>&lt;h2 id=&#34;installation&#34;&gt;Installation&lt;/h2&gt;
+
+&lt;h3 id=&#34;installing-quicklog&#34;&gt;Installing quicklog&lt;/h3&gt;
+
+&lt;p&gt;Installing quicklog can be done by downloading the latest binary &lt;a href=&#34;#&#34;&gt;here&lt;/a&gt; or performing &amp;lsquo;go install&amp;rsquo;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go install github.com/sheenobu/quicklog/cmd/quicklog
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;configuration&#34;&gt;Configuration&lt;/h2&gt;
+
+&lt;p&gt;quicklog provides two separate means of configuration: Loading from a file or loading from an etcd cluster.&lt;/p&gt;
+
+&lt;h3 id=&#34;file&#34;&gt;File based configuration&lt;/h3&gt;
+
+&lt;p&gt;File based configuration is based on JSON. The chain is described within the JSON
+alongside the configuration for each component.&lt;/p&gt;
+
+&lt;p&gt;Running with a file based configuration:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ quicklog -filename quicklog.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;quicklog.json:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;input&amp;quot;: {
+        &amp;quot;driver&amp;quot;:&amp;quot;stdin&amp;quot;
+    },
+    &amp;quot;filters&amp;quot;: [
+        {
+            &amp;quot;driver&amp;quot;:&amp;quot;uppercase&amp;quot;
+        }
+    ],
+    &amp;quot;output&amp;quot;: {
+        &amp;quot;driver&amp;quot;:&amp;quot;stdout&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Filters is &lt;strong&gt;optional&lt;/strong&gt;, however both &lt;strong&gt;input&lt;/strong&gt; and &lt;strong&gt;output&lt;/strong&gt; are required.&lt;/p&gt;
+
+&lt;p&gt;Required and optional configuration is provided via the &amp;lsquo;config&amp;rsquo; field:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;input&amp;quot;: {
+        &amp;quot;driver&amp;quot;:&amp;quot;nats&amp;quot;,
+        &amp;quot;config&amp;quot;: {
+            &amp;quot;url&amp;quot;: &amp;quot;nats://127.0.0.1:4222&amp;quot;,
+            &amp;quot;subscribe&amp;quot;: &amp;quot;logging:queue&amp;quot;
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Parsers are provided via the &amp;lsquo;parser&amp;rsquo; field on &amp;lsquo;input&amp;rsquo;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;input&amp;quot;: {
+        &amp;quot;driver&amp;quot;:&amp;quot;stdin&amp;quot;,
+        &amp;quot;parser&amp;quot;: &amp;quot;otto&amp;quot;,
+        &amp;quot;config&amp;quot;: {
+            &amp;quot;otto.script&amp;quot;: &amp;quot;res=function(e){return l=e.split(\&amp;quot; \&amp;quot;),{message:l[0],meta:l[1]}};&amp;quot;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;etcd&#34;&gt;etcd Based Configuration&lt;/h3&gt;
+
+&lt;p&gt;The etcd based configuration works nearly identifical to the JSON configuration. However, instead of a JSON
+file, each entry is stored in etcd as keys. The best way to explore this is by downloading ql2etcd,
+then loading a JSON based configuration into etcd:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ go install github.com/sheenobu/quicklog/cmd/ql2etcd
+$ ql2etcd -input quicklog.json -instanceName instanceName -etcdEndpoints http://localhost:4001
+
+$ etcdctl ls --recursive
+/quicklog
+/quicklog/instanceName
+/quicklog/instanceName/filters
+/quicklog/instanceName/filters/0
+/quicklog/instanceName/filters/0/driver
+/quicklog/instanceName/filters/0/config
+/quicklog/instanceName/reload
+/quicklog/instanceName/input
+/quicklog/instanceName/input/driver
+/quicklog/instanceName/input/parser
+/quicklog/instanceName/input/config
+/quicklog/instanceName/output
+/quicklog/instanceName/output/config
+/quicklog/instanceName/output/driver
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Each driver, parser entry is a string type. However, the &amp;lsquo;config&amp;rsquo; fields are JSON types:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ etcdctl get /quicklog/instanceName/input/config
+{&amp;quot;otto.script&amp;quot;:&amp;quot;res=function(e){return l=e.split(\&amp;quot; \&amp;quot;),{message:l[0],meta:l[1]}};&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Running this etcd config with quicklog:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$  quicklog -instanceName instanceName -etcdEndpoints http://localhost:4001
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Programmative reloading of the etcd configuration on a running quicklog instance can be
+done via setting the &lt;code&gt;/quicklog/instanceName/reload&lt;/code&gt; field after updating the required entries.&lt;/p&gt;
+
+&lt;h2 id=&#34;clustering&#34;&gt;Clustering&lt;/h2&gt;
+
+&lt;p&gt;There has been little upfront through to clustering in quicklog. However, deploying multiple instances of quicklog can be
+done in many ways:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Have each quicklog instance pull from a Nats queue, each instance getting a subset of messages which can be later merged together (via elasticsearch, bleve, etc).&lt;/li&gt;
+&lt;li&gt;The input of one quicklog instance can be the output of another quicklog, creating a tree of quicklog instances.&lt;/li&gt;
+&lt;li&gt;Quicklog can be embedded, made to be specialized as a specific component within a larger log aggregation architecture.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;embedding&#34;&gt;Embedding&lt;/h2&gt;
+
+&lt;p&gt;The primary package of quicklog is &lt;code&gt;github.com/sheenobu/quicklog/ql&lt;/code&gt;. This package is the primary implementation of the
+component system and quicklog chain. Embedding requires creating a chain, adding each required configuration option, and running the chain:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import (
+    &amp;quot;github.com/sheenobu/quicklog/filters/uuid&amp;quot;
+    &amp;quot;github.com/sheenobu/quicklog/inputs/stdin&amp;quot;
+    &amp;quot;github.com/sheenobu/quicklog/outputs/debug&amp;quot;
+    &amp;quot;github.com/sheenobu/quicklog/parsers/plain&amp;quot;
+
+    &amp;quot;golang.org/x/net/context&amp;quot;
+
+    &amp;quot;github.com/sheenobu/quicklog/ql&amp;quot;
+)
+
+func main() {
+    chain := ql.Chain{
+        Input: &amp;amp;stdin.Process{},
+        Output: &amp;amp;debug.Handler{PrintFields: debug.NullableBool{NotNull: false, Value: true}},
+        Filter: &amp;amp;uuid.Handler{FieldName: &amp;quot;uuid&amp;quot;},
+    }
+
+    ctx := context.Background()
+    chain.Execute(ctx)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This example defines our chain by importing a bunch of pre-build components. We can also provide custom components:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;chain.Input = ql.InputProcessFunc(func(ctx context.Context, input chan&amp;lt;- ql.Buffer) error {
+    go func() {
+            for {
+                    select {
+                    case t := &amp;lt;-time.After(5 * time.Second):
+                            input &amp;lt;- ql.Buffer{Data: []byte(&amp;quot;hello + &amp;quot; + t.String())}
+                    case &amp;lt;-ctx.Done():
+                            return
+                    }
+            }
+    }()
+
+    return nil
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;})&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Input Components</title>
+      <link>https://sheenobu.github.io/quicklog/input-components.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/input-components.html</guid>
+      <description>
+
+&lt;p&gt;Input components provide different methods for obtaining incoming log data.&lt;/p&gt;
+
+&lt;h2 id=&#34;standard-input&#34;&gt;Standard Input&lt;/h2&gt;
+
+&lt;p&gt;Stdin is an input component that reads from standard input. There are &lt;strong&gt;no&lt;/strong&gt; required or optional
+configuration options.&lt;/p&gt;
+
+&lt;h2 id=&#34;nats&#34;&gt;Nats&lt;/h2&gt;
+
+&lt;p&gt;Nats is an input component that reads from a Nats queue.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required
+
+&lt;ul&gt;
+&lt;li&gt;url - URL of the nats server - nats://127.0.0.1:4222&lt;/li&gt;
+&lt;li&gt;subscribe - The name of the queue to subscribe to&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Optional
+
+&lt;ul&gt;
+&lt;li&gt;servers - List of alternative servers for Nats&lt;/li&gt;
+&lt;li&gt;encoding - The encoding to use, defaults to &amp;ldquo;json&amp;rdquo; (json|gob|default)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;tcp&#34;&gt;TCP&lt;/h2&gt;
+
+&lt;p&gt;TCP is an input component that listens for TCP connections.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-1&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required
+
+&lt;ul&gt;
+&lt;li&gt;listen - The IP address port pair (ex: 127.0.0.1:5555, :5555)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;extra-fields&#34;&gt;Extra Fields&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;tcp.source - The connection remote address that is added to all incoming messages&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;udp&#34;&gt;UDP&lt;/h2&gt;
+
+&lt;p&gt;UDP is an input component that listens for UDP connections.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-2&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required
+
+&lt;ul&gt;
+&lt;li&gt;listen - The IP address port pair (ex: 127.0.0.1:5555, :5555)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;extra-fields-1&#34;&gt;Extra Fields&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;udp.source - The connection remote address that is added to all incoming messages&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Parsers</title>
+      <link>https://sheenobu.github.io/quicklog/parsers.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/parsers.html</guid>
+      <description>
+
+&lt;p&gt;Parsers work alongside the Input Components to determine how to parse the incoming message.&lt;/p&gt;
+
+&lt;h2 id=&#34;plain&#34;&gt;Plain&lt;/h2&gt;
+
+&lt;p&gt;Plain treats every incoming line as a single message, and adds it to the &amp;lsquo;message&amp;rsquo; field.&lt;/p&gt;
+
+&lt;p&gt;There are &lt;strong&gt;no&lt;/strong&gt; required or optional configuration options.&lt;/p&gt;
+
+&lt;h2 id=&#34;json&#34;&gt;JSON&lt;/h2&gt;
+
+&lt;p&gt;JSON treats every incoming line as a single JSON body. Each key in the JSON becomes a
+key in the quicklog message object. If the &amp;lsquo;message&amp;rsquo; field is not present in
+the JSON object, it is set as an empty string.&lt;/p&gt;
+
+&lt;p&gt;There are &lt;strong&gt;no&lt;/strong&gt; required or optional configuration options.&lt;/p&gt;
+
+&lt;p&gt;NOTE: If your json objects come in without &amp;lsquo;message&amp;rsquo;, you can use the rename_field filter
+to make it &amp;lsquo;message&amp;rsquo;.&lt;/p&gt;
+
+&lt;h2 id=&#34;otto&#34;&gt;Otto&lt;/h2&gt;
+
+&lt;p&gt;Otto runs each incoming line through a Javascript function.&lt;/p&gt;
+
+&lt;p&gt;The return value of the javascript function MUST be a Dictionary. The quicklog
+message data is populated from this dictionary.&lt;/p&gt;
+
+&lt;p&gt;Example function which splits the message in two:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;res=function(e){ return l=e.split(\&amp;quot; \&amp;quot;),{message:l[0],meta:l[1]}}; &amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The first part of the incoming message becomes the &amp;lsquo;message&amp;rsquo; field and the last part becomes
+the &amp;lsquo;meta&amp;rsquo; field.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required
+
+&lt;ul&gt;
+&lt;li&gt;otto.script - The javascript code to run the log message through.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Filters</title>
+      <link>https://sheenobu.github.io/quicklog/filters.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/filters.html</guid>
+      <description>
+
+&lt;p&gt;Filters are components which modify the message data.&lt;/p&gt;
+
+&lt;h2 id=&#34;uuid&#34;&gt;uuid&lt;/h2&gt;
+
+&lt;p&gt;UUID adds a uuid v4 as a field to the message data.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Optional
+
+&lt;ul&gt;
+&lt;li&gt;field - field to add the uuid value to (defaults to &amp;lsquo;uuid&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;uppercase&#34;&gt;uppercase&lt;/h2&gt;
+
+&lt;p&gt;Uppercase performs uppercase on the &amp;lsquo;message&amp;rsquo; field.&lt;/p&gt;
+
+&lt;p&gt;There are &lt;strong&gt;no&lt;/strong&gt; required or optional configuration options.&lt;/p&gt;
+
+&lt;h2 id=&#34;rename-field&#34;&gt;rename_field&lt;/h2&gt;
+
+&lt;p&gt;Rename field renames the given field, if it exists.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-1&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required
+
+&lt;ul&gt;
+&lt;li&gt;source - The field to rename&lt;/li&gt;
+&lt;li&gt;dest - The new name of the field&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Optional
+
+&lt;ul&gt;
+&lt;li&gt;copy - (true|false) - whether to copy or rename the field&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;hostname&#34;&gt;hostname&lt;/h2&gt;
+
+&lt;p&gt;Hostname adds the hostname of the current system (os.Hostname) to the given field&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-2&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Optional
+
+&lt;ul&gt;
+&lt;li&gt;field - field to add the hostname to (defaults to &amp;lsquo;hostname&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Output Components</title>
+      <link>https://sheenobu.github.io/quicklog/output-components.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sheenobu.github.io/quicklog/output-components.html</guid>
+      <description>
+
+&lt;p&gt;Output Components provide methods for writing the processed log data somewhere
+for analysis or further processing.&lt;/p&gt;
+
+&lt;h2 id=&#34;standard-output&#34;&gt;Standard Output&lt;/h2&gt;
+
+&lt;p&gt;Stdout is an output component that writes to standard output. There are &lt;strong&gt;no&lt;/strong&gt; required or optional
+configuration options.&lt;/p&gt;
+
+&lt;h2 id=&#34;debug&#34;&gt;Debug&lt;/h2&gt;
+
+&lt;p&gt;Debug is an output component that writes to standard output with some debug information.&lt;/p&gt;
+
+&lt;p&gt;Writes both the Timestamp and the Message field.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Optional
+
+&lt;ul&gt;
+&lt;li&gt;print-fields - (true|false) - Whether to print all the fields of the log entry or just the &amp;lsquo;message&amp;rsquo; field.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;nats&#34;&gt;Nats&lt;/h2&gt;
+
+&lt;p&gt;Nats is an output component that writes to a Nats queue.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-1&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required:
+
+&lt;ul&gt;
+&lt;li&gt;url - URL of the nats server.&lt;/li&gt;
+&lt;li&gt;publish - Output queue to publish the messages on.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Optional:
+
+&lt;ul&gt;
+&lt;li&gt;encoding - The encoding to use (defaults to json) (json|gob|default).&lt;/li&gt;
+&lt;li&gt;servers - List of alternate Nats servers.&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;elasticsearch-http&#34;&gt;elasticsearch-http&lt;/h2&gt;
+
+&lt;p&gt;Elasticsearch HTTP is an output component that writes to an elasticsearch HTTP server.&lt;/p&gt;
+
+&lt;h3 id=&#34;configuration-2&#34;&gt;Configuration&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Required:
+
+&lt;ul&gt;
+&lt;li&gt;url - URL of the elasticsearch server&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Optional:
+
+&lt;ul&gt;
+&lt;li&gt;index - Elasticsearch index (defaults to quicklog)&lt;/li&gt;
+&lt;li&gt;type - type of Elasticsearch entry (defaults to &amp;lsquo;entry&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

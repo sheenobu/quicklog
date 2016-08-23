@@ -1,0 +1,22 @@
+@media only screen and (min-width: 720px) {
+	.article .wrapper {
+		padding: 90px 24px 96px;
+	}
+	.article pre {
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+
+.article h1 {
+	padding-bottom: 20px;
+}
+
+.article h2 {
+	padding-top: 80px;
+}
+
+.article pre {
+	background: #eee;
+	border: 1px solid #ddd;
+}

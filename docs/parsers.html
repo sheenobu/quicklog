@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>quicklog</title>
+    <title>Parsers - quicklog</title>
     <meta name="generator" content="Hugo 0.15" />
 
     
     <meta name="description" content="A log aggregation, parsing, and searching system">
     
-    <link rel="canonical" href="https://sheenobu.github.io/quicklog/">
+    <link rel="canonical" href="https://sheenobu.github.io/quicklog/parsers.html">
     
     <meta name="author" content="sheenobu">
     
 
-    <meta property="og:url" content="https://sheenobu.github.io/quicklog/">
+    <meta property="og:url" content="https://sheenobu.github.io/quicklog/parsers.html">
     <meta property="og:title" content="quicklog">
     <meta property="og:image" content="https://sheenobu.github.io/quicklogimages/logo.png">
     <meta name="apple-mobile-web-app-title" content="quicklog">
@@ -71,9 +71,6 @@
     <script src="https://sheenobu.github.io/quicklogjavascripts/modernizr.js"></script>
 
     
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="alternate" type="application/rss+xml" title="quicklog" />
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="feed" type="application/rss+xml" title="quicklog" />
-    
 
   </head>
   <body class="palette-primary-indigo ">
@@ -102,7 +99,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        quicklog
+        Parser
       </div>
     </div>
 
@@ -318,41 +315,54 @@
 
 	<article class="article">
 		<div class="wrapper">
+			<h1>Parsers </h1>
+
 			
-				<h1>Quicklog </h1>
 
-				
+<p>Parsers work alongside the Input Components to determine how to parse the incoming message.</p>
 
-<h2 id="introduction">Introduction</h2>
+<h2 id="plain">Plain</h2>
 
-<p><em>Quicklog</em> is a log aggregation, parser, and searcher written in Golang. It can be
-run <a href="#quick-start">standalone</a> or by <a href="documentation/#embedding">embedding</a> into your own
-programs.</p>
+<p>Plain treats every incoming line as a single message, and adds it to the &lsquo;message&rsquo; field.</p>
 
-<p>Quicklog is key-value based. The messages processed by quicklog are represented as key-value pairs. By default,
-incoming message bodies are stored in the &lsquo;message&rsquo; field but that is not required.</p>
+<p>There are <strong>no</strong> required or optional configuration options.</p>
 
-<h2 id="quick-start">Quick start</h2>
+<h2 id="json">JSON</h2>
 
-<pre><code>$ go install github.com/sheenobu/quicklog/cmd/quicklog
-$ cat &lt;&lt;EOF &gt; quicklog.json
-{&quot;input&quot;: {&quot;driver&quot;:&quot;stdin&quot;}, &quot;filters&quot;: [{&quot;driver&quot;:&quot;uppercase&quot;}], &quot;output&quot;: {&quot;driver&quot;:&quot;stdout&quot;}}
-EOF
-$ quicklog
-lvl=info msg=&quot;Starting quicklog&quot;
-lvl=info msg=&quot;Loading config from file&quot; file=quicklog.json
-hello
-HELLO
+<p>JSON treats every incoming line as a single JSON body. Each key in the JSON becomes a
+key in the quicklog message object. If the &lsquo;message&rsquo; field is not present in
+the JSON object, it is set as an empty string.</p>
+
+<p>There are <strong>no</strong> required or optional configuration options.</p>
+
+<p>NOTE: If your json objects come in without &lsquo;message&rsquo;, you can use the rename_field filter
+to make it &lsquo;message&rsquo;.</p>
+
+<h2 id="otto">Otto</h2>
+
+<p>Otto runs each incoming line through a Javascript function.</p>
+
+<p>The return value of the javascript function MUST be a Dictionary. The quicklog
+message data is populated from this dictionary.</p>
+
+<p>Example function which splits the message in two:</p>
+
+<pre><code>res=function(e){ return l=e.split(\&quot; \&quot;),{message:l[0],meta:l[1]}}; &quot;
 </code></pre>
 
-<h2 id="components">Components</h2>
+<p>The first part of the incoming message becomes the &lsquo;message&rsquo; field and the last part becomes
+the &lsquo;meta&rsquo; field.</p>
 
-<p>Quicklog is a chain-based system, where data flows from an input, to a parser, to a collection of filters, then finally to an output. Each component in the chain
-has a set of configuration parameters.</p>
+<h3 id="configuration">Configuration</h3>
 
-<p>Additional features can be added via a <a href="https://github.com/sheenobu/quicklog">Pull Request</a> or by <a href="documentation/#embedding">Embedding</a>.</p>
+<ul>
+<li>Required
 
-			
+<ul>
+<li>otto.script - The javascript code to run the log message through.</li>
+</ul></li>
+</ul>
+
 
 			<aside class="copyright" role="note">
 				
@@ -367,23 +377,37 @@ has a set of configuration parameters.</p>
 			<footer class="footer">
 				
 
-
-
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
+  
+      <a href="https://sheenobu.github.io/quicklog/input-components.html" title="Input Components">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              Input Components
+            </div>
+          </div>
+        </div>
+      </a>
+  
   </div>
 
-  
-  
   <div class="next">
-      <a href="https://sheenobu.github.io/quicklog/documentation.html" title="Documentation">
+  
+      <a href="https://sheenobu.github.io/quicklog/filters.html" title="Filters">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              Documentation
+              Filters
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
@@ -391,8 +415,11 @@ has a set of configuration parameters.</p>
           </div>
         </div>
       </a>
+  
   </div>
 </nav>
+
+
 
 
 

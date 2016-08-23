@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/index.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/documentation.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/input-components.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/parsers.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/filters.html</loc>
+  </url>
+  
+  <url>
+    <loc>https://sheenobu.github.io/quicklog/output-components.html</loc>
+  </url>
+  
+</urlset>

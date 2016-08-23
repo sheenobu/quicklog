@@ -9,18 +9,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>quicklog</title>
+    <title>Filters - quicklog</title>
     <meta name="generator" content="Hugo 0.15" />
 
     
     <meta name="description" content="A log aggregation, parsing, and searching system">
     
-    <link rel="canonical" href="https://sheenobu.github.io/quicklog/">
+    <link rel="canonical" href="https://sheenobu.github.io/quicklog/filters.html">
     
     <meta name="author" content="sheenobu">
     
 
-    <meta property="og:url" content="https://sheenobu.github.io/quicklog/">
+    <meta property="og:url" content="https://sheenobu.github.io/quicklog/filters.html">
     <meta property="og:title" content="quicklog">
     <meta property="og:image" content="https://sheenobu.github.io/quicklogimages/logo.png">
     <meta name="apple-mobile-web-app-title" content="quicklog">
@@ -71,9 +71,6 @@
     <script src="https://sheenobu.github.io/quicklogjavascripts/modernizr.js"></script>
 
     
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="alternate" type="application/rss+xml" title="quicklog" />
-    <link href="https://sheenobu.github.io/quicklog/.xml" rel="feed" type="application/rss+xml" title="quicklog" />
-    
 
   </head>
   <body class="palette-primary-indigo ">
@@ -102,7 +99,7 @@
     </div>
     <div class="stretch">
       <div class="title">
-        quicklog
+        Filter
       </div>
     </div>
 
@@ -318,41 +315,66 @@
 
 	<article class="article">
 		<div class="wrapper">
-			
-				<h1>Quicklog </h1>
-
-				
-
-<h2 id="introduction">Introduction</h2>
-
-<p><em>Quicklog</em> is a log aggregation, parser, and searcher written in Golang. It can be
-run <a href="#quick-start">standalone</a> or by <a href="documentation/#embedding">embedding</a> into your own
-programs.</p>
-
-<p>Quicklog is key-value based. The messages processed by quicklog are represented as key-value pairs. By default,
-incoming message bodies are stored in the &lsquo;message&rsquo; field but that is not required.</p>
-
-<h2 id="quick-start">Quick start</h2>
-
-<pre><code>$ go install github.com/sheenobu/quicklog/cmd/quicklog
-$ cat &lt;&lt;EOF &gt; quicklog.json
-{&quot;input&quot;: {&quot;driver&quot;:&quot;stdin&quot;}, &quot;filters&quot;: [{&quot;driver&quot;:&quot;uppercase&quot;}], &quot;output&quot;: {&quot;driver&quot;:&quot;stdout&quot;}}
-EOF
-$ quicklog
-lvl=info msg=&quot;Starting quicklog&quot;
-lvl=info msg=&quot;Loading config from file&quot; file=quicklog.json
-hello
-HELLO
-</code></pre>
-
-<h2 id="components">Components</h2>
-
-<p>Quicklog is a chain-based system, where data flows from an input, to a parser, to a collection of filters, then finally to an output. Each component in the chain
-has a set of configuration parameters.</p>
-
-<p>Additional features can be added via a <a href="https://github.com/sheenobu/quicklog">Pull Request</a> or by <a href="documentation/#embedding">Embedding</a>.</p>
+			<h1>Filters </h1>
 
 			
+
+<p>Filters are components which modify the message data.</p>
+
+<h2 id="uuid">uuid</h2>
+
+<p>UUID adds a uuid v4 as a field to the message data.</p>
+
+<h3 id="configuration">Configuration</h3>
+
+<ul>
+<li>Optional
+
+<ul>
+<li>field - field to add the uuid value to (defaults to &lsquo;uuid&rsquo;)</li>
+</ul></li>
+</ul>
+
+<h2 id="uppercase">uppercase</h2>
+
+<p>Uppercase performs uppercase on the &lsquo;message&rsquo; field.</p>
+
+<p>There are <strong>no</strong> required or optional configuration options.</p>
+
+<h2 id="rename-field">rename_field</h2>
+
+<p>Rename field renames the given field, if it exists.</p>
+
+<h3 id="configuration-1">Configuration</h3>
+
+<ul>
+<li>Required
+
+<ul>
+<li>source - The field to rename</li>
+<li>dest - The new name of the field</li>
+</ul></li>
+<li>Optional
+
+<ul>
+<li>copy - (true|false) - whether to copy or rename the field</li>
+</ul></li>
+</ul>
+
+<h2 id="hostname">hostname</h2>
+
+<p>Hostname adds the hostname of the current system (os.Hostname) to the given field</p>
+
+<h3 id="configuration-2">Configuration</h3>
+
+<ul>
+<li>Optional
+
+<ul>
+<li>field - field to add the hostname to (defaults to &lsquo;hostname&rsquo;)</li>
+</ul></li>
+</ul>
+
 
 			<aside class="copyright" role="note">
 				
@@ -367,23 +389,37 @@ has a set of configuration parameters.</p>
 			<footer class="footer">
 				
 
-
-
 <nav class="pagination" aria-label="Footer">
   <div class="previous">
+  
+      <a href="https://sheenobu.github.io/quicklog/parsers.html" title="Parsers">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              Parsers
+            </div>
+          </div>
+        </div>
+      </a>
+  
   </div>
 
-  
-  
   <div class="next">
-      <a href="https://sheenobu.github.io/quicklog/documentation.html" title="Documentation">
+  
+      <a href="https://sheenobu.github.io/quicklog/output-components.html" title="Output Components">
         <span class="direction">
           Next
         </span>
         <div class="page">
           <div class="stretch">
             <div class="title">
-              Documentation
+              Output Components
             </div>
           </div>
           <div class="button button-next" role="button" aria-label="Next">
@@ -391,8 +427,11 @@ has a set of configuration parameters.</p>
           </div>
         </div>
       </a>
+  
   </div>
 </nav>
+
+
 
 
 
